@@ -9,9 +9,9 @@ export default function Character({morningPos, nightPos}) {
     const groupRef = useRef()
 
     useFrame(() => {
-        if(useStore.getState().timeOfDay == 'morning'){
+        if(useStore.getState().partOfDay == 'morning'){
             groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, morningPos, 0.3)
-        } else if(useStore.getState().timeOfDay == 'night') {
+        } else if(useStore.getState().partOfDay == 'night') {
             groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, nightPos, 0.3)
         } else {
             groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, 0, 0.3)

@@ -21,12 +21,12 @@ export default function Lights() {
       }, [])
 
     useFrame(() => {
-        if(useStore.getState().timeOfDay === "night" || useStore.getState().timeOfDay === "evening") {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.005)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.005)
+        if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
         } else {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.005)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -8, 0.005)
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
         }
     })  
 

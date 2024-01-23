@@ -3,13 +3,13 @@ import useStore from './store'
 const timeOfDayOrder = ['morning', 'midday', 'evening', 'night']
 
 export function updateDayCycle() {
-  const { timeOfDay, setTimeOfDay } = useStore.getState()
+  const { partOfDay, setPartOfDay } = useStore.getState()
 
-  let nextIndex = (timeOfDayOrder.indexOf(timeOfDay) + 1) % timeOfDayOrder.length
+  let nextIndex = (timeOfDayOrder.indexOf(partOfDay) + 1) % timeOfDayOrder.length
   
   const newPartOfDay = timeOfDayOrder[nextIndex]
 
-  setTimeOfDay(newPartOfDay)
+  setPartOfDay(newPartOfDay)
 
   console.log("Part of day is now: " + newPartOfDay)
 }
