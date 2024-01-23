@@ -11,7 +11,7 @@ export function updateDayCycle() {
 
   setTimeOfDay(newPartOfDay)
 
-  console.log("Part of day now: " + newPartOfDay)
+  console.log("Part of day is now: " + newPartOfDay)
 }
 
 export function getPartOfDay(hour) {
