@@ -38,6 +38,7 @@ export default function Lights() {
 
 
     return <>
-        <directionalLight ref={dirLight} position={[3,3,3]}/>
+        <ambientLight intensity={.3} />
+        <directionalLight ref={dirLight} position={[-10,10,-10]}/>
     </>
 }

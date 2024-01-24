@@ -81,6 +81,7 @@ export default function SchedulableSprite({
         
         // Reset sprite when complete
         isPlaying = false
+        plane.current.visible = false
         texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
 
     }
@@ -110,6 +111,7 @@ export default function SchedulableSprite({
 
         // SCHEDULING: Handle playing based on state from 'store'
         if(useStore.getState().partOfDay == partOfDayToAnimate && !playScheduled) {
+            plane.current.visible = true
             console.log(useStore.getState().partOfDay)
             play()
             playScheduled = true
