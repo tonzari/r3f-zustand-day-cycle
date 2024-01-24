@@ -3,7 +3,7 @@ import Lights from "./Lights";
 import { Perf } from "r3f-perf";
 import Character from "./Character";
 import { Suspense } from "react";
-import AnimatedSpriteMesh from "./AnimatedSpriteMesh";
+import SchedulableSprite from "./SchedulableSprite";
 
 export default function Experience() {
     console.log("experience rerender")
@@ -17,8 +17,9 @@ export default function Experience() {
 
         <Character morningPos={-5} nightPos={4}/>
         <Character morningPos={-3} nightPos={1}/>
+        
         <Suspense>
-            <AnimatedSpriteMesh
+            <SchedulableSprite
                 sprite={'/bmo.png'}
                 fps={24}
                 columnCount={14}
@@ -30,11 +31,13 @@ export default function Experience() {
                 scale={3}
                 playOnLoad={false}
                 partOfDayToAnimate={'morning'}
+
+
             />
         </Suspense>
 
         <Suspense>
-            <AnimatedSpriteMesh
+            <SchedulableSprite
                 sprite={'/squidward.png'}
                 fps={6}
                 columnCount={8}

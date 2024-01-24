@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import { useFrame, useLoader } from "@react-three/fiber"
 import { TextureLoader } from "three"
 import { useEffect, useRef } from 'react'
-import useStore from './store'
+import { useStore } from './store'
 
 /*
 
@@ -11,7 +11,22 @@ as long as the tiles are uniform in size, and there is no padding/margin.
 
 */
 
-export default function AnimatedSpriteMesh({sprite, columnCount, rowCount, startFrame = 1, endFrame, fps = 12, loop = true, playOnLoad = true, clickToPlay = false, allowRetrigger = false, lookAtCam = false, alphaTest = 0.5, partOfDayToAnimate, ...props}) {
+export default function SchedulableSprite({
+    sprite, 
+    columnCount, 
+    rowCount, 
+    startFrame = 1, 
+    endFrame, 
+    fps = 12, 
+    loop = true, 
+    playOnLoad = true, 
+    clickToPlay = false, 
+    allowRetrigger = false, 
+    lookAtCam = false, 
+    alphaTest = 0.5, 
+    partOfDayToAnimate, 
+    ...props}) {
+
     console.log("animated sprite mesh render")
     // VARIABLES - - - - - - - - - - - - - - - - - - - - - - - - - - - 
     
@@ -93,7 +108,7 @@ export default function AnimatedSpriteMesh({sprite, columnCount, rowCount, start
             nextFrameTimestamp = window.performance.now() + msPerFrame
         }
 
-        // Handle playing based on state from 'store'
+        // SCHEDULING: Handle playing based on state from 'store'
         if(useStore.getState().partOfDay == partOfDayToAnimate && !playScheduled) {
             console.log(useStore.getState().partOfDay)
             play()
@@ -125,8 +140,6 @@ export default function AnimatedSpriteMesh({sprite, columnCount, rowCount, start
 // UTILITY FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 // getSpriteOffsetVec2 is called from useFrame!
-// so, set up a THREE.vector2 in outer scope to reuse and set within function, 
-// as opossed to re-creating the vec2
 // docs: https://docs.pmnd.rs/react-three-fiber/advanced/pitfalls#%E2%9C%85-better-re-use-object
 
 function getSpriteOffsetVec2(reusableVec2, frameNumber, rows, columns) {

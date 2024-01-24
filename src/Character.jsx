@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useFrame } from "@react-three/fiber"
 import { useRef } from "react"
-import useStore from "./store"
+import {useStore} from "./store"
 
 export default function Character({morningPos, nightPos}) {
     console.log("Character rerender")
