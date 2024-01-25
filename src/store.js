@@ -20,7 +20,7 @@ const store = (set) => ({
     }
   }),
   
-  start: () => {
+  startDayCycle: () => {
     console.log('ZUSTAND: start()')
     set((state) => {
       const partOfDay = getPartOfDay(state.simulatedTime.getHours())

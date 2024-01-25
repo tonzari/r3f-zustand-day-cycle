@@ -86,6 +86,10 @@ export default function SchedulableSprite({
 
     }
 
+    function getCurrentPartOfDay() {
+        return useStore.getState().partOfDay
+    }
+
     // HOOKS - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
     // 'start'
@@ -95,6 +99,7 @@ export default function SchedulableSprite({
             scaleMultiplier * ratioHeightToWidth,
             scaleMultiplier
         )
+        plane.current.visible = false
     }, []);
     
     // 'update'
@@ -103,19 +108,24 @@ export default function SchedulableSprite({
             plane.current.lookAt(state.camera.position)
         }
 
-        // Determine frame rate indepent time to update sprite 
+        // Determine frame rate indepent time to update sprite, set by prop: FPS
         if(isPlaying && window.performance.now() >= nextFrameTimestamp) {
             UpdateSpriteFrame()
             nextFrameTimestamp = window.performance.now() + msPerFrame
         }
 
-        // SCHEDULING: Handle playing based on state from 'store'
-        if(useStore.getState().partOfDay == partOfDayToAnimate && !playScheduled) {
+        /* SCHEDULING: Handle playing based on state from 'store'
+        *
+        *
+        * 
+        * 
+        */
+
+        if(getCurrentPartOfDay() == partOfDayToAnimate && !playScheduled) {
             plane.current.visible = true
-            console.log(useStore.getState().partOfDay)
             play()
             playScheduled = true
-        } else if(useStore.getState().partOfDay !== partOfDayToAnimate) {
+        } else if(getCurrentPartOfDay() !== partOfDayToAnimate) {
             playScheduled = false
         }
     })
@@ -137,6 +147,8 @@ export default function SchedulableSprite({
         </mesh>
       </>
     );
+
+    
 }
 
 // UTILITY FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -

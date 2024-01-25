@@ -15,16 +15,16 @@ export default function Lights() {
     const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
     const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
 
-    useEffect(() => {
-        start()
-        const interval = setTimeout(function loop(){
-          updateDayCycle()
-          setSimulatedTime()
-          setTimeout(loop, partOfDayDurationInMs / useStore.getState().speedMultiplier)
-        }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
+    // useEffect(() => {
+    //     start()
+    //     const interval = setTimeout(function loop(){
+    //       updateDayCycle()
+    //       setSimulatedTime()
+    //       setTimeout(loop, partOfDayDurationInMs / useStore.getState().speedMultiplier)
+    //     }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
     
-        return () => clearInterval(interval); // Cleanup on unmount
-      }, [])
+    //     return () => clearInterval(interval); // Cleanup on unmount
+    //   }, [])
 
     useFrame(() => {
         if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
