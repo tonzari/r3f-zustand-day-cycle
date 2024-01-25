@@ -1,14 +1,12 @@
-import { OrbitControls } from "@react-three/drei";
-import Lights from "./Lights";
-import { Perf } from "r3f-perf";
-import Character from "./Character";
 import { Suspense, useEffect } from "react";
+import { OrbitControls } from "@react-three/drei";
+import { Perf } from "r3f-perf";
+
+import Lights from "./Lights";
 import SchedulableSprite from "./SchedulableSprite";
 import WindowScene from "./WindowScene";
-import { updateDayCycle } from './util'
-import { useStore } from "./store"
-
-
+import { useStore } from "./store";
+import { updateDayCycle } from './util';
 
 export default function Experience() {
     console.log("experience rerender")
@@ -20,10 +18,12 @@ export default function Experience() {
     useEffect(() => {
         startDayCycle()
         
-        const timeoutID = setTimeout(function loop(){
+        // Set a timeout to repeatedly update the day cycle. Recursive loop.
+        const timeoutID = setTimeout(function dayCycleUpdater(){
           updateDayCycle()
           setSimulatedTime()
-          setTimeout(loop, partOfDayDurationInMs / useStore.getState().speedMultiplier)
+          // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
+          setTimeout(dayCycleUpdater, partOfDayDurationInMs / useStore.getState().speedMultiplier)
         }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
     
         return () => clearTimeout(timeoutID); // Cleanup on unmount
@@ -91,10 +91,5 @@ export default function Experience() {
                 lookAtCam
             />
         </Suspense>
-        
-        <mesh>
-            <sphereGeometry />
-            <meshStandardMaterial color={"lightblue"}/>
-        </mesh>
     </>
 }
