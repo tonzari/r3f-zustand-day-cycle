@@ -6,27 +6,49 @@ import Lights from "./Lights";
 import SchedulableSprite from "./SchedulableSprite";
 import WindowScene from "./WindowScene";
 import { useStore } from "./store";
-import { updateDayCycle } from './util';
+//import { updateDayCycle } from './util';
+import AnimatedSpriteMesh from "./AnimatedSprite";
 
 export default function Experience() {
     console.log("experience rerender")
 
     const startDayCycle = useStore((state)=>state.startDayCycle)
     const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
+    const setNextEventTime = useStore((state)=>state.setNextEventTime)
     const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
 
     useEffect(() => {
         startDayCycle()
         
         // Set a timeout to repeatedly update the day cycle. Recursive loop.
-        const timeoutID = setTimeout(function dayCycleUpdater(){
-          updateDayCycle()
-          setSimulatedTime()
-          // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
-          setTimeout(dayCycleUpdater, partOfDayDurationInMs / useStore.getState().speedMultiplier)
+        const timeoutIdDayCycle = setTimeout(function dayCycleUpdater() {
+            //updateDayCycle()
+            setSimulatedTime()
+          
+            // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
+            setTimeout(dayCycleUpdater, partOfDayDurationInMs / useStore.getState().speedMultiplier)
         }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
     
-        return () => clearTimeout(timeoutID); // Cleanup on unmount
+        const minDelay = 5000
+        const maxDelay = 20000
+        let eventDelay = minDelay
+        let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
+        
+        const timeoutIdEventScheduler = setTimeout(function scheduleNextEvent() {
+            eventDelay = Math.floor(Math.random() * maxDelay)
+            eventDelay = eventDelay > minDelay ? eventDelay : minDelay
+            simulatedDelay = eventDelay / useStore.getState().speedMultiplier
+            
+            setNextEventTime(simulatedDelay)
+            
+            setTimeout(scheduleNextEvent, simulatedDelay)
+        }, simulatedDelay)
+
+        // Cleanup on recursive timeouts
+        return () => {
+            clearTimeout(timeoutIdDayCycle)
+            clearTimeout(timeoutIdEventScheduler)
+        } 
       }, [])
 
     return <>
@@ -37,8 +59,42 @@ export default function Experience() {
         <Lights />
 
         <WindowScene />
+        <Suspense>
+            <AnimatedSpriteMesh
+                sprite={'/procreateTest.png'}
+                fps={24}
+                columnCount={10}
+                rowCount={6}
+                startFrame={1}
+                endFrame={59}
+                loop={false}
+                position={[0,8,0]}
+                rotation={[0,Math.PI/2,0]}
+                scale={25}
+                playOnLoad={false}
+                lookAtCam
+            />
+        </Suspense>
 
         <Suspense>
+            <AnimatedSpriteMesh
+                sprite={'/bmo.png'}
+                fps={24}
+                columnCount={14}
+                rowCount={1}
+                startFrame={1}
+                endFrame={14}
+                loop={false}
+                position={[0,5,0]}
+                rotation={[0,Math.PI/2,0]}
+                scale={10}
+                playOnLoad={false}
+                lookAtCam
+            />
+        </Suspense>
+        
+
+        {/* <Suspense>
             <SchedulableSprite
                 sprite={'/bmo.png'}
                 fps={24}
@@ -90,6 +146,6 @@ export default function Experience() {
                 partOfDayToAnimate={'night'}
                 lookAtCam
             />
-        </Suspense>
+        </Suspense> */}
     </>
 }

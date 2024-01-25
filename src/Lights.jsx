@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
-import {updateDayCycle} from './util'
+//import {updateDayCycle} from './util'
 import { useStore } from "./store"
 
 // an example of how a light system might respond to state changes.
@@ -11,9 +11,9 @@ export default function Lights() {
     console.log("Lights rerender")
 
     const dirLight = useRef()
-    const start = useStore((state)=>state.start)
-    const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
-    const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
+    // const start = useStore((state)=>state.start)
+    // const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
+    // const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
 
     // useEffect(() => {
     //     start()

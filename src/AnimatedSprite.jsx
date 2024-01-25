@@ -4,14 +4,7 @@ import { TextureLoader } from "three"
 import { useEffect, useRef } from 'react'
 import { useStore } from './store'
 
-/*
-
-This sprite component requires a grid based spritesheet of any column or row count, 
-as long as the tiles are uniform in size, and there is no padding/margin.
-
-*/
-
-export default function SchedulableSprite({
+export default function AnimatedSpriteMesh({
     sprite, 
     columnCount, 
     rowCount, 
@@ -24,11 +17,10 @@ export default function SchedulableSprite({
     allowRetrigger = false, 
     lookAtCam = false, 
     alphaTest = 0.5, 
-    partOfDayToAnimate, 
     ...props}) {
 
     console.log("animated sprite mesh render")
-    // VARIABLES - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    // VARIABLES - - - - - - - - - - - - - - - - - - - - 
     
     const texture = useLoader(TextureLoader, sprite)
     const plane = useRef()
@@ -43,10 +35,9 @@ export default function SchedulableSprite({
     const spriteTileCoords = new THREE.Vector2()
     const scaleMultiplier = props.scale ? props.scale : 1
 
-    let playScheduled = false
     let isPlaying = playOnLoad
     let currentFrame = startFrame
-    let nextFrameTimestamp = 0
+    let nextFrameTime = 0
 
     // enable wrapping, crop, set first frame
     texture.wrapS = THREE.RepeatWrapping
@@ -54,9 +45,12 @@ export default function SchedulableSprite({
     texture.repeat.set(1/columnCount,1/rowCount)
     texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
     
-    // FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    // FUNCTIONS - - - - - - - - - - - - - - - - - - - - 
 
     function play() {
+        if(!allowRetrigger && isPlaying) return
+
+        plane.current.visible = true
         isPlaying = true
         currentFrame = startFrame
     }
@@ -79,18 +73,12 @@ export default function SchedulableSprite({
             return
         }
         
-        // Reset sprite when complete
         isPlaying = false
         plane.current.visible = false
         texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
-
     }
 
-    function getCurrentPartOfDay() {
-        return useStore.getState().partOfDay
-    }
-
-    // HOOKS - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    // HOOKS - - - - - - - - - - - - - - - - - - - - - - 
 
     // 'start'
     useEffect(() => {
@@ -100,7 +88,22 @@ export default function SchedulableSprite({
             scaleMultiplier
         )
         plane.current.visible = false
-    }, []);
+        isPlaying = false
+    }, [])
+
+    // 'scheduler (from store)'
+    let nextDelay = useStore.getState().nextEventTime - Date.now()
+    useEffect(() => {
+        const timeoutId = setTimeout(function PlayScheduledSprite() {
+            console.log("hello")
+            nextDelay = useStore.getState().nextEventTime - Date.now()
+            if(useStore.getState().nextEventTime) { play() }
+            
+            setTimeout(PlayScheduledSprite, nextDelay);
+        }, nextDelay)
+    
+        return () => { clearTimeout(timeoutId) }
+    }, [])
     
     // 'update'
     useFrame((state) => {
@@ -108,26 +111,10 @@ export default function SchedulableSprite({
             plane.current.lookAt(state.camera.position)
         }
 
-        // Determine frame rate indepent time to update sprite, set by prop: FPS
-        if(isPlaying && window.performance.now() >= nextFrameTimestamp) {
+        // Determine frame rate indepent time to update sprite 
+        if(isPlaying && window.performance.now() >= nextFrameTime) {
             UpdateSpriteFrame()
-            nextFrameTimestamp = window.performance.now() + msPerFrame
-        }
-
-        /* 
-        *
-        *
-        * SCHEDULING: 
-        * Handle playing based on state from 'store'
-        * 
-        */
-
-        if(getCurrentPartOfDay() == partOfDayToAnimate && !playScheduled) {
-            plane.current.visible = true
-            play()
-            playScheduled = true
-        } else if(getCurrentPartOfDay() !== partOfDayToAnimate) {
-            playScheduled = false
+            nextFrameTime = window.performance.now() + msPerFrame
         }
     })
 
@@ -148,13 +135,15 @@ export default function SchedulableSprite({
         </mesh>
       </>
     );
-
-    
 }
 
-// UTILITY FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+
+// UTILITY FUNCTIONS - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
 // getSpriteOffsetVec2 is called from useFrame!
+// so, set up a THREE.vector2 in outer scope to reuse and set within function, 
+// as opossed to re-creating the vec2
 // docs: https://docs.pmnd.rs/react-three-fiber/advanced/pitfalls#%E2%9C%85-better-re-use-object
 
 function getSpriteOffsetVec2(reusableVec2, frameNumber, rows, columns) {

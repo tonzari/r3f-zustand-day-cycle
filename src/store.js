@@ -7,13 +7,18 @@ const store = (set) => ({
   initialRealTime: new Date(),
   simulatedTime: new Date(),
   partOfDay: getPartOfDay(new Date().getHours()),
-  speedMultiplier: 1000,
+  speedMultiplier: 1,
+  nextEventTime: null,
+
   setPartOfDay: newTime => set({ partOfDay: newTime }),
+  
   setSpeedMultiplier: newSpeed => set({ speedMultiplier: newSpeed }),
+  
   updateSimulatedTime: () => set(state => {
     const currentRealTime = new Date()
     const realTimeElapsed = currentRealTime - state.initialRealTime
     const simulatedTimeElapsed = realTimeElapsed * state.speedMultiplier
+    
     return { 
       simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
       partOfDay: getPartOfDay(state.simulatedTime.getHours())
@@ -28,6 +33,15 @@ const store = (set) => ({
       console.log("user started experience at part of day: " + partOfDay, state.simulatedTime)
       
       return { partOfDay: partOfDay}
+    })
+  },
+
+  setNextEventTime: (milliseconds) => {
+    set(()=> {
+      const nextTimeMs = new Date().getTime() + milliseconds
+      const nextTime = new Date(nextTimeMs)
+      console.log(nextTime)
+      return {nextEventTime: nextTime}
     })
   }
   
