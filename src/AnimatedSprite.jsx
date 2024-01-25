@@ -91,7 +91,12 @@ export default function AnimatedSpriteMesh({
         isPlaying = false
     }, [])
 
-    // 'scheduler (from store)'
+    /*
+    *
+    *               'scheduler (time comes from store)'
+    * *
+    * */
+
     let nextDelay = useStore.getState().nextEventTime - Date.now()
     useEffect(() => {
         const timeoutId = setTimeout(function PlayScheduledSprite() {

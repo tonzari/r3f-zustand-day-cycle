@@ -22,7 +22,6 @@ export default function Experience() {
         
         // Set a timeout to repeatedly update the day cycle. Recursive loop.
         const timeoutIdDayCycle = setTimeout(function dayCycleUpdater() {
-            //updateDayCycle()
             setSimulatedTime()
           
             // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
