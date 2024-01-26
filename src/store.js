@@ -9,6 +9,7 @@ const store = (set) => ({
   partOfDay: getPartOfDay(new Date().getHours()),
   speedMultiplier: 1,
   nextEventTime: null,
+  nextSprite: null,
 
   setPartOfDay: newTime => set({ partOfDay: newTime }),
   
@@ -40,8 +41,20 @@ const store = (set) => ({
     set(()=> {
       const nextTimeMs = new Date().getTime() + milliseconds
       const nextTime = new Date(nextTimeMs)
-      console.log(nextTime)
-      return {nextEventTime: nextTime}
+      
+
+      // todo: create list of available sprites in app
+      // for now just debug with a random or alternating sprite choice
+      const randomInt = Math.random() > .5 ? 1 : 0
+      const sprites = ['bmo.png','procreateTest.png']
+      const nextSprite = '/' + sprites[randomInt]
+      // todo: ^^^^^^^^
+      console.log('next up: ', nextSprite, nextTime)
+
+      return { 
+        nextEventTime: nextTime,
+        nextSprite: nextSprite 
+      }
     })
   }
   

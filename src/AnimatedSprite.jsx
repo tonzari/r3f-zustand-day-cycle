@@ -49,14 +49,14 @@ export default function AnimatedSpriteMesh({
 
     function play() {
         if(!allowRetrigger && isPlaying) return
-
+        console.log('PLAY, and', useStore.getState().nextSprite === sprite)
         plane.current.visible = true
         isPlaying = true
         currentFrame = startFrame
     }
 
     function handleClick(e) {
-        if(clickToPlay && allowRetrigger || !isPlaying) { play() }
+        if(clickToPlay && allowRetrigger || clickToPlay && !isPlaying) { play() }
         if(props.onClick) { props.onClick(e) }
     }
 
@@ -107,16 +107,26 @@ export default function AnimatedSpriteMesh({
     useEffect(() => {
         let timeoutId
 
-        function RunScheduledSpitePlayer() {
+        // Recursive!
+        function runScheduledSpritePlayer() {
             delay = useStore.getState().nextEventTime - Date.now()
 
-            play()
+            
+            if(useStore.getState().nextSprite === sprite) {
+                console.log("i am: ", sprite, " scheduled: ", useStore.getState().nextSprite)
+                play()
+            }
+            // else {
+            //     plane.current.visible = false
+            // }
+        
+            
 
-            console.log("hello",delay)
-            timeoutId = setTimeout(RunScheduledSpitePlayer, delay);
+            timeoutId = setTimeout(runScheduledSpritePlayer, delay + 30);
         }
         
-        setTimeout(RunScheduledSpitePlayer, delay)
+        // Set delay before running scheduler so it doesn't run before the first 'nextEventTime' is set
+        setTimeout(runScheduledSpritePlayer, delay)
     
         return () => { clearTimeout(timeoutId) }
     }, [])

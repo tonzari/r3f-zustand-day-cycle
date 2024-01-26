@@ -4,7 +4,7 @@ import { useStore } from './store'
 
 function Clock() {
   const [time, setTime] = useState(new Date())
-  const { simulatedTime, updateSimulatedTime: updateSimulatedTime, nextEventTime} = useStore()
+  const { simulatedTime, updateSimulatedTime: updateSimulatedTime, nextEventTime, nextSprite} = useStore()
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -21,7 +21,7 @@ function Clock() {
     <p>
       Real time: {format(time, 'hh:mm:ss a')}
       <br />
-      Next Event: {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}
+      Next Event: {nextSprite} {' '} {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}
       <br />
       Simulated time: {format(simulatedTime, 'MMMM eeee h a')}
     </p>

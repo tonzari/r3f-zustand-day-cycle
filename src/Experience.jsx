@@ -28,12 +28,13 @@ export default function Experience() {
             setTimeout(dayCycleUpdater, partOfDayDurationInMs / useStore.getState().speedMultiplier)
         }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
     
-        const minDelay = 5000
-        const maxDelay = 20000
+        const minDelay = 3000
+        const maxDelay = 4000
         let eventDelay = minDelay
         let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
         let timeoutIdEventScheduler
 
+        // Recursive!
         function runEventScheduler() {
             eventDelay = Math.floor(Math.random() * maxDelay)
             eventDelay = eventDelay > minDelay ? eventDelay : minDelay
@@ -75,6 +76,24 @@ export default function Experience() {
                 scale={25}
                 playOnLoad={false}
                 lookAtCam
+            />
+        </Suspense>
+
+        <Suspense>
+            <AnimatedSpriteMesh
+                sprite={'/bmo.png'}
+                fps={12}
+                columnCount={14}
+                rowCount={1}
+                startFrame={1}
+                endFrame={14}
+                loop={false}
+                position={[0,5,0]}
+                rotation={[0,Math.PI/2,0]}
+                scale={10}
+                playOnLoad={false}
+                lookAtCam
+                clickToPlay={false}
             />
         </Suspense>
 
