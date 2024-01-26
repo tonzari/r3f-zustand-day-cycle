@@ -41,7 +41,7 @@ export default function Experience() {
             setNextEventTime(simulatedDelay)
             
             setTimeout(scheduleNextEvent, simulatedDelay)
-        }, simulatedDelay)
+        }, 0)
 
         // Cleanup on recursive timeouts
         return () => {
@@ -74,24 +74,6 @@ export default function Experience() {
                 lookAtCam
             />
         </Suspense>
-
-        <Suspense>
-            <AnimatedSpriteMesh
-                sprite={'/bmo.png'}
-                fps={24}
-                columnCount={14}
-                rowCount={1}
-                startFrame={1}
-                endFrame={14}
-                loop={false}
-                position={[0,5,0]}
-                rotation={[0,Math.PI/2,0]}
-                scale={10}
-                playOnLoad={false}
-                lookAtCam
-            />
-        </Suspense>
-        
 
         {/* <Suspense>
             <SchedulableSprite

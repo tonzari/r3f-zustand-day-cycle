@@ -91,21 +91,32 @@ export default function AnimatedSpriteMesh({
         isPlaying = false
     }, [])
 
-    /*
-    *
-    *               'scheduler (time comes from store)'
-    * *
-    * */
+        /*
+        *
+        *    Scheduling: (time comes from store)
+        *    A loop that creates new events each iteration
+        * 
+        *    todo: 
+        *       - This should be set somewhere else. Move it out of the Sprite component.
+        *       
+        *
+        */
 
-    let nextDelay = useStore.getState().nextEventTime - Date.now()
+    let delay = useStore.getState().nextEventTime - Date.now()
+
     useEffect(() => {
-        const timeoutId = setTimeout(function PlayScheduledSprite() {
-            console.log("hello")
-            nextDelay = useStore.getState().nextEventTime - Date.now()
-            if(useStore.getState().nextEventTime) { play() }
-            
-            setTimeout(PlayScheduledSprite, nextDelay);
-        }, nextDelay)
+        let timeoutId
+
+        function PlayScheduledSprite() {
+            delay = useStore.getState().nextEventTime - Date.now()
+            if(delay > 0) {
+                console.log("hello", delay)
+                play()
+            }
+            timeoutId = setTimeout(PlayScheduledSprite, delay);
+        }
+        
+        setTimeout(PlayScheduledSprite, delay)
     
         return () => { clearTimeout(timeoutId) }
     }, [])
