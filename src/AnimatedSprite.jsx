@@ -107,16 +107,16 @@ export default function AnimatedSpriteMesh({
     useEffect(() => {
         let timeoutId
 
-        function PlayScheduledSprite() {
+        function RunScheduledSpitePlayer() {
             delay = useStore.getState().nextEventTime - Date.now()
-            if(delay > 0) {
-                console.log("hello", delay)
-                play()
-            }
-            timeoutId = setTimeout(PlayScheduledSprite, delay);
+
+            play()
+
+            console.log("hello",delay)
+            timeoutId = setTimeout(RunScheduledSpitePlayer, delay);
         }
         
-        setTimeout(PlayScheduledSprite, delay)
+        setTimeout(RunScheduledSpitePlayer, delay)
     
         return () => { clearTimeout(timeoutId) }
     }, [])

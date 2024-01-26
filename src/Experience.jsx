@@ -32,16 +32,19 @@ export default function Experience() {
         const maxDelay = 20000
         let eventDelay = minDelay
         let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
-        
-        const timeoutIdEventScheduler = setTimeout(function scheduleNextEvent() {
+        let timeoutIdEventScheduler
+
+        function runEventScheduler() {
             eventDelay = Math.floor(Math.random() * maxDelay)
             eventDelay = eventDelay > minDelay ? eventDelay : minDelay
             simulatedDelay = eventDelay / useStore.getState().speedMultiplier
             
             setNextEventTime(simulatedDelay)
             
-            setTimeout(scheduleNextEvent, simulatedDelay)
-        }, 0)
+            timeoutIdEventScheduler = setTimeout(runEventScheduler, simulatedDelay)
+        }
+
+        runEventScheduler()
 
         // Cleanup on recursive timeouts
         return () => {
