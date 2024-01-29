@@ -26,7 +26,7 @@ const store = (set) => ({
       partOfDay: getPartOfDay(state.simulatedTime.getHours())
     }
   }),
-  
+
   startDayCycle: () => {
     console.log('ZUSTAND: start()')
     set((state) => {
@@ -38,21 +38,30 @@ const store = (set) => ({
     })
   },
 
+  updateDayCycle: () => {
+      const partOfDayDurationInMs = 21600000
+      const interval = () => {
+        set(state => {
+          const currentRealTime = new Date()
+          const realTimeElapsed = currentRealTime - state.initialRealTime
+          const simulatedTimeElapsed = realTimeElapsed * state.speedMultiplier
+          setTimeout(interval, partOfDayDurationInMs / state.speedMultiplier);
+          return { 
+            simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
+            partOfDay: getPartOfDay(state.simulatedTime.getHours())
+          }
+        })
+      }
+      interval()
+  },
+
   setNextEvent: (milliseconds) => {
     set(()=> {
-  
-      // todo: create list of available sprites in app
-      //        then include important sprite info, like row and column count, and start/end sprite
-      //        for now just debug with a random or alternating sprite choice
-      //        but this should be more robust and avoid repeats 
-      
       // set next sprite at random
   
       const randomInt = Math.floor(Math.random() * spriteData.length)
       const sprite = spriteData[randomInt]
       
-      // todo: ^^^^^^^^
-
       // set next event timestamp
       const nextTimeMs = new Date().getTime() + milliseconds
       const nextTime = new Date(nextTimeMs)

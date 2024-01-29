@@ -14,33 +14,37 @@ export default function Experience() {
     console.log("experience rerender")
 
     const startDayCycle = useStore((state)=>state.startDayCycle)
-    const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
-    const setNextEventTime = useStore((state)=>state.setNextEvent)
+    const updateDayCycle = useStore((state)=>state.updateDayCycle)
+    const setNextEvent = useStore((state)=>state.setNextEvent)
 
-    const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
+    //const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
 
     useEffect(() => {
         startDayCycle()
-        
+        updateDayCycle()
         // Set a timeout to repeatedly update the day cycle. Recursive loop.
         // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
-        const timeoutIdDayCycle = setTimeout(setSimulatedTime, partOfDayDurationInMs / useStore.getState().speedMultiplier)
+        //const timeoutIdDayCycle = setTimeout(updateSimulatedTime, partOfDayDurationInMs / useStore.getState().speedMultiplier)
         
-    
+        // init
         const minDelay = 3000
-        const maxDelay = 4000
+        const maxDelay = 6000
         let eventDelay = minDelay
         let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
         let timeoutIdEventScheduler
 
-        // Recursive!
+        // Recursive! Updates at random intervals between min and max delay, never ends
         function runEventScheduler() {
-            eventDelay = Math.floor(Math.random() * maxDelay)
-            eventDelay = eventDelay > minDelay ? eventDelay : minDelay
+            // set random delay within range
+            eventDelay = Math.floor(Math.random() * (maxDelay - minDelay) + minDelay)
+
+            // apply speed modification to delay
             simulatedDelay = eventDelay / useStore.getState().speedMultiplier
             
-            setNextEventTime(simulatedDelay)
-            
+            // pass delay to event setter
+            setNextEvent(simulatedDelay)
+
+            // do it again!
             timeoutIdEventScheduler = setTimeout(runEventScheduler, simulatedDelay)
         }
 
@@ -59,7 +63,7 @@ export default function Experience() {
         <Lights />
         <WindowScene />
 
-        {spriteData.map((item, index)=>
+        {spriteData.map((item, index) =>
             <Suspense key={index}>
                 <AnimatedSpriteMesh
                     sprite={item.sprite}
@@ -70,6 +74,7 @@ export default function Experience() {
                     endFrame={item.endFrame}
                     position={item.position}
                     scale={item.scale}
+                    rotation={[0, Math.PI/2, 0]}
                 />
             </Suspense>
         )}
