@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from "zustand/middleware"
 import { getPartOfDay } from './util'
+import spriteData from './SpriteData.json'
 
 const store = (set) => ({
 
@@ -9,7 +10,7 @@ const store = (set) => ({
   partOfDay: getPartOfDay(new Date().getHours()),
   speedMultiplier: 1,
   nextEventTime: null,
-  nextSprite: null,
+  currentSprite: null,
 
   setPartOfDay: newTime => set({ partOfDay: newTime }),
   
@@ -37,23 +38,28 @@ const store = (set) => ({
     })
   },
 
-  setNextEventTime: (milliseconds) => {
+  setNextEvent: (milliseconds) => {
     set(()=> {
+  
+      // todo: create list of available sprites in app
+      //        then include important sprite info, like row and column count, and start/end sprite
+      //        for now just debug with a random or alternating sprite choice
+      //        but this should be more robust and avoid repeats 
+      
+      // set next sprite at random
+  
+      const randomInt = Math.floor(Math.random() * spriteData.length)
+      const sprite = spriteData[randomInt]
+      
+      // todo: ^^^^^^^^
+
+      // set next event timestamp
       const nextTimeMs = new Date().getTime() + milliseconds
       const nextTime = new Date(nextTimeMs)
-      
-
-      // todo: create list of available sprites in app
-      // for now just debug with a random or alternating sprite choice
-      const randomInt = Math.random() > .5 ? 1 : 0
-      const sprites = ['bmo.png','procreateTest.png']
-      const nextSprite = '/' + sprites[randomInt]
-      // todo: ^^^^^^^^
-      console.log('next up: ', nextSprite, nextTime)
 
       return { 
         nextEventTime: nextTime,
-        nextSprite: nextSprite 
+        currentSprite: sprite
       }
     })
   }

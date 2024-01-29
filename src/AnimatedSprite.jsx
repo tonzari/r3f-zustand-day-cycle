@@ -11,8 +11,8 @@ export default function AnimatedSpriteMesh({
     startFrame = 1, 
     endFrame, 
     fps = 12, 
-    loop = true, 
-    playOnLoad = true, 
+    loop = false, 
+    playOnLoad = false, 
     clickToPlay = false, 
     allowRetrigger = false, 
     lookAtCam = false, 
@@ -20,6 +20,7 @@ export default function AnimatedSpriteMesh({
     ...props}) {
 
     console.log("animated sprite mesh render")
+    
     // VARIABLES - - - - - - - - - - - - - - - - - - - - 
     
     const texture = useLoader(TextureLoader, sprite)
@@ -49,10 +50,17 @@ export default function AnimatedSpriteMesh({
 
     function play() {
         if(!allowRetrigger && isPlaying) return
-        console.log('PLAY, and', useStore.getState().nextSprite === sprite)
+        playAudio()
         plane.current.visible = true
         isPlaying = true
         currentFrame = startFrame
+    }
+
+    function playAudio() {
+        if(useStore.getState().currentSprite.audio) {
+            const audio = new Audio(useStore.getState().currentSprite.audio)
+            audio.play()
+        } 
     }
 
     function handleClick(e) {
@@ -101,31 +109,23 @@ export default function AnimatedSpriteMesh({
         *       
         *
         */
-
-    let delay = useStore.getState().nextEventTime - Date.now()
+    const timeOffset = 30
+    let delay = useStore.getState().nextEventTime - Date.now() + timeOffset
 
     useEffect(() => {
         let timeoutId
 
         // Recursive!
         function runScheduledSpritePlayer() {
-            delay = useStore.getState().nextEventTime - Date.now()
-
-            
-            if(useStore.getState().nextSprite === sprite) {
-                console.log("i am: ", sprite, " scheduled: ", useStore.getState().nextSprite)
+            if(useStore.getState().currentSprite.sprite === sprite) {
                 play()
             }
-            // else {
-            //     plane.current.visible = false
-            // }
-        
-            
 
-            timeoutId = setTimeout(runScheduledSpritePlayer, delay + 30);
+            delay = useStore.getState().nextEventTime - Date.now() + timeOffset
+            timeoutId = setTimeout(runScheduledSpritePlayer, delay);
         }
         
-        // Set delay before running scheduler so it doesn't run before the first 'nextEventTime' is set
+        // Set delay before running scheduler first time, so it doesn't run before the first 'nextEventTime' is set
         setTimeout(runScheduledSpritePlayer, delay)
     
         return () => { clearTimeout(timeoutId) }
