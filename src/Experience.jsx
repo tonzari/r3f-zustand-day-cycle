@@ -17,15 +17,10 @@ export default function Experience() {
     const updateDayCycle = useStore((state)=>state.updateDayCycle)
     const setNextEvent = useStore((state)=>state.setNextEvent)
 
-    //const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
-
     useEffect(() => {
         startDayCycle()
         updateDayCycle()
-        // Set a timeout to repeatedly update the day cycle. Recursive loop.
-        // the speedMultiplier can be edited in realtime so must be accessed before scheduling the next loop
-        //const timeoutIdDayCycle = setTimeout(updateSimulatedTime, partOfDayDurationInMs / useStore.getState().speedMultiplier)
-        
+ 
         // init
         const minDelay = 3000
         const maxDelay = 6000
@@ -52,7 +47,6 @@ export default function Experience() {
 
         // Cleanup on recursive timeouts
         return () => {
-            clearTimeout(timeoutIdDayCycle)
             clearTimeout(timeoutIdEventScheduler)
         } 
       }, [])
