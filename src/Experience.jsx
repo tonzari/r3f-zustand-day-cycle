@@ -13,9 +13,10 @@ import spriteData from './SpriteData.json'
 export default function Experience() {
     console.log("experience rerender")
 
-    const startDayCycle = useStore((state)=>state.startDayCycle)
-    const updateDayCycle = useStore((state)=>state.updateDayCycle)
-    const setNextEvent = useStore((state)=>state.setNextEvent)
+    const startDayCycle = useStore((state) => state.startDayCycle)
+    const updateDayCycle = useStore((state) => state.updateDayCycle)
+    const setNextEvent = useStore((state) => state.setNextEvent)
+    const clearDayCycle = useStore((state) => state.clearDayCycle)
 
     useEffect(() => {
         startDayCycle()
@@ -30,24 +31,18 @@ export default function Experience() {
 
         // Recursive! Updates at random intervals between min and max delay, never ends
         function runEventScheduler() {
-            // set random delay within range
             eventDelay = Math.floor(Math.random() * (maxDelay - minDelay) + minDelay)
-
-            // apply speed modification to delay
             simulatedDelay = eventDelay / useStore.getState().speedMultiplier
-            
-            // pass delay to event setter
             setNextEvent(simulatedDelay)
-
-            // do it again!
             timeoutIdEventScheduler = setTimeout(runEventScheduler, simulatedDelay)
         }
 
         runEventScheduler()
 
-        // Cleanup on recursive timeouts
+        // Cleanup recursive timeouts
         return () => {
             clearTimeout(timeoutIdEventScheduler)
+            clearDayCycle
         } 
       }, [])
 

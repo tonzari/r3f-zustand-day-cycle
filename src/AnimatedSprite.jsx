@@ -8,16 +8,16 @@ export default function AnimatedSpriteMesh({
     sprite, 
     columnCount, 
     rowCount, 
-    startFrame = 1, 
+    startFrame, 
     endFrame, 
-    fps = 12, 
+    fps, 
     loop = false, 
     playOnLoad = false, 
     clickToPlay = false, 
     allowRetrigger = false, 
     lookAtCam = false, 
     alphaTest = 0.5, 
-    ...props}) {
+    ...props }) {
 
     console.log("animated sprite mesh render")
     
@@ -50,6 +50,7 @@ export default function AnimatedSpriteMesh({
 
     function play() {
         if(!allowRetrigger && isPlaying) return
+        
         playAudio()
         plane.current.visible = true
         isPlaying = true
@@ -68,25 +69,38 @@ export default function AnimatedSpriteMesh({
         if(props.onClick) { props.onClick(e) }
     }
 
-    function UpdateSpriteFrame() {  
-        texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
-        
-        if (currentFrame < endFrame) {
-            currentFrame++
-            return
+    function updateSpriteFrame() {
+        // Determine frame rate indepent time to update sprite 
+        if (isPlaying && window.performance.now() >= nextFrameTime) {
+            texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
+
+            if (currentFrame < endFrame) {
+                currentFrame++
+            } else if (loop) {
+                currentFrame = startFrame
+            } else {
+                isPlaying = false
+                plane.current.visible = false
+                texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
+            }
+
+            nextFrameTime = window.performance.now() + msPerFrame
         }
-    
-        if (loop) {
-            currentFrame = startFrame
-            return
-        }
-        
-        isPlaying = false
+    }
+
+    const handleVisibilityHidden = () => {
         plane.current.visible = false
-        texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
+        isPlaying = false
+    }
+
+    const handleVisibilityVisible = () => {
+        plane.current.visible = false
+        isPlaying = false
     }
 
     // HOOKS - - - - - - - - - - - - - - - - - - - - - - 
+
+    usePageVisibility(handleVisibilityVisible, handleVisibilityHidden)
 
     // 'start'
     useEffect(() => {
@@ -99,49 +113,40 @@ export default function AnimatedSpriteMesh({
         isPlaying = false
     }, [])
 
-        /*
-        *
-        *    Scheduling: (time comes from store)
-        *    A loop that creates new events each iteration
-        * 
-        *    todo: 
-        *       - This should be set somewhere else. Move it out of the Sprite component.
-        *       
-        *
-        */
-    const timeOffset = 30
+    /*
+            *    Scheduling: (time comes from store)
+            *    A loop that creates new events each iteration
+            * 
+            *    todo: 
+            *       - This could be set somewhere else. Move it out of the Sprite component?
+            *       however, i suppose each component will still need to check if it is time to play
+    */
+    
+    const timeOffset = 30 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
     let delay = useStore.getState().nextEventTime - Date.now() + timeOffset
 
     useEffect(() => {
         let timeoutId
 
-        // Recursive!
-        function runScheduledSpritePlayer() {
+        function isItMyTurnToPlayInterval() {
             if(useStore.getState().currentSprite.sprite === sprite) {
                 play()
             }
 
             delay = useStore.getState().nextEventTime - Date.now() + timeOffset
-            timeoutId = setTimeout(runScheduledSpritePlayer, delay);
+            timeoutId = setTimeout(isItMyTurnToPlayInterval, delay);
         }
         
         // Set delay before running scheduler first time, so it doesn't run before the first 'nextEventTime' is set
-        setTimeout(runScheduledSpritePlayer, delay)
+        setTimeout(isItMyTurnToPlayInterval, delay)
     
         return () => { clearTimeout(timeoutId) }
     }, [])
     
     // 'update'
     useFrame((state) => {
-        if(lookAtCam) {
-            plane.current.lookAt(state.camera.position)
-        }
-
-        // Determine frame rate indepent time to update sprite 
-        if(isPlaying && window.performance.now() >= nextFrameTime) {
-            UpdateSpriteFrame()
-            nextFrameTime = window.performance.now() + msPerFrame
-        }
+        if(lookAtCam) { plane.current.lookAt(state.camera.position) }
+        updateSpriteFrame()
     })
 
     return (
@@ -161,6 +166,8 @@ export default function AnimatedSpriteMesh({
         </mesh>
       </>
     );
+
+
 }
 
 
@@ -196,4 +203,22 @@ function getSpriteOffsetVec2(reusableVec2, frameNumber, rows, columns) {
     reusableVec2.setY(y)
 
     return reusableVec2
+}
+
+function usePageVisibility(onVisible, onHidden) {
+    useEffect(() => {
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                onHidden();
+            } else {
+                onVisible();
+            }
+        };
+
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [onVisible, onHidden]);
 }
