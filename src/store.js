@@ -34,19 +34,15 @@ const store = (set) => ({
 
   // Initializes the day cycle and logs the current part of the day.
   startDayCycle: () => {
-    console.log('ZUSTAND: start()')
     set((state) => {
-      const partOfDay = getPartOfDay(state.simulatedTime.getHours())
-
-      console.log("user started experience at part of day: " + partOfDay, state.simulatedTime)
-      
+      const partOfDay = getPartOfDay(state.simulatedTime.getHours())      
       return { partOfDay: partOfDay}
     })
   },
 
   // Continuously updates the day cycle based on real-time elapsed, adjusting for speed multiplier.
   updateDayCycle: () => {
-      const partOfDayDurationInMs = 21600000
+      const partOfDayDurationInMs = 21600000 // Full day divided to 4 parts, as milliseconds
       const interval = () => {
         set(state => {
           clearTimeout(state.timeoutId)

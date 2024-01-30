@@ -11,34 +11,36 @@ export default function Lights() {
     console.log("Lights rerender")
 
     const dirLight = useRef()
-    // const start = useStore((state)=>state.start)
-    // const setSimulatedTime = useStore((state)=>state.updateSimulatedTime)
-    // const partOfDayDurationInMs = 21600000 // = day in milliseconds / 4 (part of day count (morning, midday, evening, night)
+    const shadowCameraDimension = 1000
 
-    // useEffect(() => {
-    //     start()
-    //     const interval = setTimeout(function loop(){
-    //       updateDayCycle()
-    //       setSimulatedTime()
-    //       setTimeout(loop, partOfDayDurationInMs / useStore.getState().speedMultiplier)
-    //     }, partOfDayDurationInMs / useStore.getState().speedMultiplier)
-    
-    //     return () => clearInterval(interval); // Cleanup on unmount
-    //   }, [])
-
-    useFrame(() => {
-        if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
-        } else {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
-        }
-    })  
+    // useFrame(() => {
+    //     if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
+    //         dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
+    //         dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
+    //     } else {
+    //         dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
+    //         dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
+    //     }
+    // })  
 
 
     return <>
-        <ambientLight intensity={.3} />
-        <directionalLight ref={dirLight} position={[-10,10,-10]}/>
+        <ambientLight 
+            intensity={.3} 
+        />
+        <directionalLight
+            ref={dirLight}
+            castShadow
+            intensity={4}
+            position={[-10,6,1]}
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            shadow-camera-near={0.1}
+            shadow-camera-far={100}
+            shadow-camera-left={-100}
+            shadow-camera-right={300}
+            shadow-camera-top={100}
+            shadow-camera-bottom={-100}
+        />
     </>
 }

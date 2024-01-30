@@ -3,7 +3,6 @@ import { OrbitControls } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
-import SchedulableSprite from "./SchedulableSprite";
 import WindowScene from "./WindowScene";
 import { useStore } from "./store";
 
@@ -13,36 +12,33 @@ import spriteData from './SpriteData.json'
 export default function Experience() {
     console.log("experience rerender")
 
-    const startDayCycle = useStore((state) => state.startDayCycle)
+    const startDayCycle  = useStore((state) => state.startDayCycle)
     const updateDayCycle = useStore((state) => state.updateDayCycle)
-    const setNextEvent = useStore((state) => state.setNextEvent)
-    const clearDayCycle = useStore((state) => state.clearDayCycle)
+    const setNextEvent   = useStore((state) => state.setNextEvent)
+    const clearDayCycle  = useStore((state) => state.clearDayCycle)
 
     useEffect(() => {
-        startDayCycle()
-        updateDayCycle()
- 
-        // init
         const minDelay = 3000
         const maxDelay = 6000
         let eventDelay = minDelay
         let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
         let timeoutIdEventScheduler
 
-        // Recursive! Updates at random intervals between min and max delay, never ends
-        function runEventScheduler() {
+        function runEventInterval() {
             eventDelay = Math.floor(Math.random() * (maxDelay - minDelay) + minDelay)
             simulatedDelay = eventDelay / useStore.getState().speedMultiplier
             setNextEvent(simulatedDelay)
-            timeoutIdEventScheduler = setTimeout(runEventScheduler, simulatedDelay)
+            timeoutIdEventScheduler = setTimeout(runEventInterval, simulatedDelay)
         }
 
-        runEventScheduler()
+        startDayCycle()
+        updateDayCycle()
+        runEventInterval()
 
         // Cleanup recursive timeouts
         return () => {
             clearTimeout(timeoutIdEventScheduler)
-            clearDayCycle
+            clearDayCycle()
         } 
       }, [])
 

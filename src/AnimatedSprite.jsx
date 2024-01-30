@@ -3,6 +3,7 @@ import { useFrame, useLoader } from "@react-three/fiber"
 import { TextureLoader } from "three"
 import { useEffect, useRef } from 'react'
 import { useStore } from './store'
+import { usePageVisibility } from './usePageVisibility'
 
 export default function AnimatedSpriteMesh({
     sprite, 
@@ -26,26 +27,12 @@ export default function AnimatedSpriteMesh({
     const texture = useLoader(TextureLoader, sprite)
     const plane = useRef()
     const msPerFrame = 1000 / fps
-    const textureHeight = texture.source.data.height
-    const textureWidth = texture.source.data.width
-    const frameSize = {
-        x: textureWidth / columnCount, 
-        y: textureHeight / rowCount
-    }
-    const ratioHeightToWidth = frameSize.y/frameSize.x
     const spriteTileCoords = new THREE.Vector2()
-    const scaleMultiplier = props.scale ? props.scale : 1
-
+    
     let isPlaying = playOnLoad
     let currentFrame = startFrame
     let nextFrameTime = 0
 
-    // enable wrapping, crop, set first frame
-    texture.wrapS = THREE.RepeatWrapping
-    texture.wrapt = THREE.RepeatWrapping
-    texture.repeat.set(1/columnCount,1/rowCount)
-    texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
-    
     // FUNCTIONS - - - - - - - - - - - - - - - - - - - - 
 
     function play() {
@@ -58,10 +45,20 @@ export default function AnimatedSpriteMesh({
     }
 
     function playAudio() {
-        if(useStore.getState().currentSprite.audio) {
-            const audio = new Audio(useStore.getState().currentSprite.audio)
-            audio.play()
-        } 
+        const audioSrc = useStore.getState().currentSprite.audio;
+        if (audioSrc) {
+            const audio = new Audio(audioSrc);
+    
+            // Event listener for successful audio loading
+            audio.addEventListener('canplaythrough', () => {
+                audio.play();
+            }, { once: true });
+    
+            // Error handling for audio loading
+            audio.addEventListener('error', () => {
+                console.warn(`Could not load audio file at ${audioSrc}`);
+            }, { once: true });
+        }
     }
 
     function handleClick(e) {
@@ -70,7 +67,7 @@ export default function AnimatedSpriteMesh({
     }
 
     function updateSpriteFrame() {
-        // Determine frame rate indepent time to update sprite 
+        // update frames based on time, not useFrame fps  
         if (isPlaying && window.performance.now() >= nextFrameTime) {
             texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
 
@@ -100,46 +97,53 @@ export default function AnimatedSpriteMesh({
 
     // HOOKS - - - - - - - - - - - - - - - - - - - - - - 
 
+    // stop sprites when user leaves tab/window
     usePageVisibility(handleVisibilityVisible, handleVisibilityHidden)
 
-    // 'start'
+    // 'initialize'
     useEffect(() => {
+        const textureHeight = texture.source.data.height
+        const textureWidth = texture.source.data.width
+        const frameSize = {
+            x: textureWidth / columnCount, 
+            y: textureHeight / rowCount
+        }
+        const ratioHeightToWidth = frameSize.y/frameSize.x
+        const scaleMultiplier = props.scale ? props.scale : 1
+        const delayOffset = 30 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
+
+        let timeoutId
+        let delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+
         plane.current.scale.set(
             scaleMultiplier,
             scaleMultiplier * ratioHeightToWidth,
             scaleMultiplier
         )
+
+        // enable wrapping, crop, set first frame
+        texture.wrapS = THREE.RepeatWrapping
+        texture.wrapt = THREE.RepeatWrapping
+        texture.repeat.set(1/columnCount,1/rowCount)
+        texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
+    
         plane.current.visible = false
         isPlaying = false
-    }, [])
-
-    /*
-            *    Scheduling: (time comes from store)
-            *    A loop that creates new events each iteration
-            * 
-            *    todo: 
-            *       - This could be set somewhere else. Move it out of the Sprite component?
-            *       however, i suppose each component will still need to check if it is time to play
-    */
-    
-    const timeOffset = 30 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
-    let delay = useStore.getState().nextEventTime - Date.now() + timeOffset
-
-    useEffect(() => {
-        let timeoutId
 
         function isItMyTurnToPlayInterval() {
             if(useStore.getState().currentSprite.sprite === sprite) {
                 play()
+            } else {
+                plane.current.visible = false
             }
 
-            delay = useStore.getState().nextEventTime - Date.now() + timeOffset
-            timeoutId = setTimeout(isItMyTurnToPlayInterval, delay);
+            delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+            timeoutId = setTimeout(isItMyTurnToPlayInterval, delayToNextEvent);
         }
-        
+
         // Set delay before running scheduler first time, so it doesn't run before the first 'nextEventTime' is set
-        setTimeout(isItMyTurnToPlayInterval, delay)
-    
+        setTimeout(isItMyTurnToPlayInterval, delayToNextEvent)
+
         return () => { clearTimeout(timeoutId) }
     }, [])
     
@@ -153,7 +157,8 @@ export default function AnimatedSpriteMesh({
       <>
         <mesh 
             ref={plane} 
-            castShadow 
+            castShadow
+            receiveShadow
             {...props} 
             onClick={handleClick}
         >
@@ -165,9 +170,7 @@ export default function AnimatedSpriteMesh({
             />
         </mesh>
       </>
-    );
-
-
+    )
 }
 
 
@@ -205,20 +208,3 @@ function getSpriteOffsetVec2(reusableVec2, frameNumber, rows, columns) {
     return reusableVec2
 }
 
-function usePageVisibility(onVisible, onHidden) {
-    useEffect(() => {
-        const handleVisibilityChange = () => {
-            if (document.hidden) {
-                onHidden();
-            } else {
-                onVisible();
-            }
-        };
-
-        document.addEventListener("visibilitychange", handleVisibilityChange);
-
-        return () => {
-            document.removeEventListener("visibilitychange", handleVisibilityChange);
-        };
-    }, [onVisible, onHidden]);
-}

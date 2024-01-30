@@ -10,7 +10,7 @@ export default function Overlay() {
     const speedMultiplier = useStore((state)=>state.speedMultiplier)
         
     return <div className="container">
-        <h1>Zustand State of Day Test</h1>
+        <h1>R3F Zustand Day Cycle Sprite Scheduler Test</h1>
         <p>Current Day State: {partOfDay}</p>
 
         <form
@@ -25,7 +25,7 @@ export default function Overlay() {
                 type="range"
                 id="time-multiplier"
                 min={1}
-                max={50000}
+                max={10}
                 value={speedMultiplier}
                 onChange={event => {
                     setSpeedMultiplier(event.target.value)
