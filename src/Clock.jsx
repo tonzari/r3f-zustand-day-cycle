@@ -21,6 +21,8 @@ function Clock() {
     <p>
       Real time: {format(time, 'hh:mm:ss a')}
       <br />
+      Simulated time: {format(simulatedTime, 'hh:mm:ss a')}
+      <br />
       Current: {currentSprite?.sprite}
       <br />
       Next Event: {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}
