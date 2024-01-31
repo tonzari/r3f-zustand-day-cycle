@@ -12,9 +12,7 @@ function App() {
       eventPrefix="client"
     >
       <color attach="background" args={['black']} />
-      <Experience 
-        
-      />
+      <Experience />
     </Canvas>
   </>
 }

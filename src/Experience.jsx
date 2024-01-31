@@ -12,6 +12,7 @@ import spriteData from './SpriteData.json'
 export default function Experience() {
     console.log("experience rerender")
 
+    // Zustand State
     const startDayCycle  = useStore((state) => state.startDayCycle)
     const updateDayCycle = useStore((state) => state.updateDayCycle)
     const setNextEvent   = useStore((state) => state.setNextEvent)
@@ -32,6 +33,7 @@ export default function Experience() {
             timeoutIdEventScheduler = setTimeout(runEventInterval, simulatedDelay)
         }
 
+        // Start your machines! Wash!
         startClock()
         startDayCycle()
         updateDayCycle()

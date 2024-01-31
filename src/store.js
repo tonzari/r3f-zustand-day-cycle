@@ -68,6 +68,7 @@ const store = (set) => ({
         clearTimeout(state.clockTimeoutId)
         const time = new Date()
         const newTimeoutId = setTimeout(tick, 1000)
+        
         return { 
           realTime: time,
           clockTimeoutId: newTimeoutId
@@ -77,16 +78,21 @@ const store = (set) => ({
     tick()
   },
 
-  // Clear the recursive timeout
+  // Clear the recursive timeouts
   clearDayCycle: () => set(state => {
     clearTimeout(state.timeoutId)
-    return { timeoutId: null }
+    return { dayCycleTimeoutId: null }
+  }),
+
+  clearClockCycle: () => set(state => { 
+    clearTimeout(state.clockTimeoutId)
+    return { clockTimeoutId: null}
   }),
 
   // Sets the next event, including a new sprite and event timestamp.
   setNextEvent: (milliseconds) => {
     set((state)=> {
-
+      state.updateSimulatedTime()
       // set next sprite at random
       let sprite = state.currentSprite
 

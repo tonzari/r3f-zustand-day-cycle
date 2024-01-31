@@ -2,7 +2,6 @@ import format from 'date-fns/format'
 import { useStore } from './store'
 
 function Clock() {
-  console.log("clock rerender")
   const { simulatedTime, nextEventTime, currentSprite} = useStore()
   const realTime = useStore((state) => state.realTime)
 
