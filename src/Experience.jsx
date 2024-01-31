@@ -16,9 +16,10 @@ export default function Experience() {
     const updateDayCycle = useStore((state) => state.updateDayCycle)
     const setNextEvent   = useStore((state) => state.setNextEvent)
     const clearDayCycle  = useStore((state) => state.clearDayCycle)
+    const startClock = useStore((state) => state.startClock)
 
     useEffect(() => {
-        const minDelay = 3000
+        const minDelay = 4000
         const maxDelay = 6000
         let eventDelay = minDelay
         let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
@@ -31,6 +32,7 @@ export default function Experience() {
             timeoutIdEventScheduler = setTimeout(runEventInterval, simulatedDelay)
         }
 
+        startClock()
         startDayCycle()
         updateDayCycle()
         runEventInterval()

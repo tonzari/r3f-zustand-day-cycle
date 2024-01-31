@@ -32,12 +32,11 @@ export default function AnimatedSpriteMesh({
     let isPlaying = playOnLoad
     let currentFrame = startFrame
     let nextFrameTime = 0
-
+    
     // FUNCTIONS - - - - - - - - - - - - - - - - - - - - 
 
     function play() {
         if(!allowRetrigger && isPlaying) return
-        
         playAudio()
         plane.current.visible = true
         isPlaying = true
@@ -45,30 +44,32 @@ export default function AnimatedSpriteMesh({
     }
 
     function playAudio() {
-        const audioSrc = useStore.getState().currentSprite.audio;
+        const audioSrc = useStore.getState().currentSprite.audio
         if (audioSrc) {
-            const audio = new Audio(audioSrc);
+            const audio = new Audio(audioSrc)
+            audio.playbackRate = useStore.getState().speedMultiplier
     
             // Event listener for successful audio loading
             audio.addEventListener('canplaythrough', () => {
-                audio.play();
-            }, { once: true });
+                audio.play()
+            }, { once: true })
     
             // Error handling for audio loading
             audio.addEventListener('error', () => {
-                console.warn(`Could not load audio file at ${audioSrc}`);
-            }, { once: true });
+                console.warn(`Could not load audio file at ${audioSrc}`)
+            }, { once: true })
         }
     }
 
     function handleClick(e) {
-        if(clickToPlay && allowRetrigger || clickToPlay && !isPlaying) { play() }
+        //if(clickToPlay && allowRetrigger || clickToPlay && !isPlaying) { play() }
         if(props.onClick) { props.onClick(e) }
     }
 
     function updateSpriteFrame() {
         // update frames based on time, not useFrame fps  
-        if (isPlaying && window.performance.now() >= nextFrameTime) {
+        
+        if(isPlaying && window.performance.now() >= nextFrameTime) {
             texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
 
             if (currentFrame < endFrame) {
@@ -81,7 +82,7 @@ export default function AnimatedSpriteMesh({
                 texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
             }
 
-            nextFrameTime = window.performance.now() + msPerFrame
+            nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
         }
     }
 
@@ -110,10 +111,11 @@ export default function AnimatedSpriteMesh({
         }
         const ratioHeightToWidth = frameSize.y/frameSize.x
         const scaleMultiplier = props.scale ? props.scale : 1
-        const delayOffset = 30 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
+        const delayOffset = 0 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
 
         let timeoutId
-        let delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+        //let delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+        let delayToNextEvent = useStore.getState().nextEventTime - useStore.getState().simulatedTime.getTime() + delayOffset
 
         plane.current.scale.set(
             scaleMultiplier,
@@ -137,7 +139,8 @@ export default function AnimatedSpriteMesh({
                 plane.current.visible = false
             }
 
-            delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+            //delayToNextEvent = useStore.getState().nextEventTime - Date.now() + delayOffset
+            delayToNextEvent = useStore.getState().nextEventTime - useStore.getState().simulatedTime.getTime() + delayOffset
             timeoutId = setTimeout(isItMyTurnToPlayInterval, delayToNextEvent);
         }
 

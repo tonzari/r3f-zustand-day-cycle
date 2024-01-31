@@ -7,12 +7,14 @@ const store = (set) => ({
 
   // Stores the initial real time and simulated time, and calculates the initial part of the day.
   initialRealTime: new Date(),
+  realTime: new Date(),
   simulatedTime: new Date(),
   partOfDay: getPartOfDay(new Date().getHours()),
   speedMultiplier: 1,
   nextEventTime: null,
   currentSprite: null,
-  timeoutId: null,
+  dayCycleTimeoutId: null,
+  clockTimeoutId: null,
 
   // Updates the part of day based on new time.
   setPartOfDay: newTime => set({ partOfDay: newTime }),
@@ -60,6 +62,21 @@ const store = (set) => ({
       interval()
   },
 
+  startClock: () => {
+    const tick = () => {
+      set(state => {
+        clearTimeout(state.clockTimeoutId)
+        const time = new Date()
+        const newTimeoutId = setTimeout(tick, 1000)
+        return { 
+          realTime: time,
+          clockTimeoutId: newTimeoutId
+        }
+      })
+    }
+    tick()
+  },
+
   // Clear the recursive timeout
   clearDayCycle: () => set(state => {
     clearTimeout(state.timeoutId)
@@ -68,13 +85,18 @@ const store = (set) => ({
 
   // Sets the next event, including a new sprite and event timestamp.
   setNextEvent: (milliseconds) => {
-    set(()=> {
+    set((state)=> {
+
       // set next sprite at random
-      const randomInt = Math.floor(Math.random() * spriteData.length)
-      const sprite = spriteData[randomInt]
+      let sprite = state.currentSprite
+
+      while(sprite === state.currentSprite) {
+        const randomInt = Math.floor(Math.random() * spriteData.length)
+        sprite = spriteData[randomInt]
+      }
       
       // set next event timestamp
-      const nextTimeMs = new Date().getTime() + milliseconds
+      const nextTimeMs = state.simulatedTime.getTime() + milliseconds
       const nextTime = new Date(nextTimeMs)
 
       return { 
