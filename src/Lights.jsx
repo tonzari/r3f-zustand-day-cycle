@@ -13,15 +13,15 @@ export default function Lights() {
     const dirLight = useRef()
     const shadowCameraDimension = 1000
 
-    // useFrame(() => {
-    //     if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
-    //         dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
-    //         dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
-    //     } else {
-    //         dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
-    //         dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
-    //     }
-    // })  
+    useFrame(() => {
+        if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
+        } else {
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
+        }
+    })  
 
 
     return <>
@@ -31,16 +31,16 @@ export default function Lights() {
         <directionalLight
             ref={dirLight}
             castShadow
-            intensity={4}
-            position={[-10,6,1]}
-            shadow-mapSize-width={2048}
-            shadow-mapSize-height={2048}
-            shadow-camera-near={0.1}
-            shadow-camera-far={100}
-            shadow-camera-left={-100}
-            shadow-camera-right={300}
-            shadow-camera-top={100}
-            shadow-camera-bottom={-100}
+            intensity={1}
+            position={[4,5,3]}
+            shadow-mapSize={2048}
+            shadow-bias={-.009}
+            shadow-camera-near={ 1 }
+            shadow-camera-far={ 30 }
+            shadow-camera-top={ 30 }
+            shadow-camera-right={ 30 }
+            shadow-camera-bottom={ -30 }
+            shadow-camera-left={ -30 }
         />
     </>
 }

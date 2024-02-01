@@ -58,7 +58,7 @@ export default function Experience() {
             <LaundromatModel />
         </Suspense>
 
-        <group position={[4,0,0]}>
+        <group position={[4,1,0]}>
             {spriteData.map((item, index) =>
                 <Suspense key={index}>
                     <AnimatedSpriteMesh
