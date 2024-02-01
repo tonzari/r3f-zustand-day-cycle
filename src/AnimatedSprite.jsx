@@ -28,8 +28,8 @@ export default function AnimatedSpriteMesh({
     const plane = useRef()
     const msPerFrame = 1000 / fps
     const spriteTileCoords = new THREE.Vector2()
-    const hasBeenPlayedRef = useRef(false)
-    
+    const lastPlayedSpriteRef = useRef(null)
+
     let isPlaying = playOnLoad
     let currentFrame = startFrame
     let nextFrameTime = 0
@@ -131,49 +131,24 @@ export default function AnimatedSpriteMesh({
     
         plane.current.visible = false
         isPlaying = false
-
-        // function isItMyTurnToPlayInterval() {
-        //     if(useStore.getState().currentSprite.sprite === sprite) {
-        //         play()
-        //     } else {
-        //         plane.current.visible = false
-        //     }
-
-        //     delayToNextEvent = useStore.getState().nextEventTime - useStore.getState().simulatedTime.getTime() + delayOffset
-        //     timeoutId = setTimeout(isItMyTurnToPlayInterval, delayToNextEvent);
-        // }
-
-        // // Set delay before running scheduler first time, so it doesn't run before the first 'nextEventTime' is set
-        // setTimeout(isItMyTurnToPlayInterval, delayToNextEvent)
-
-        //return () => { clearTimeout(timeoutId) }
     }, [])
 
-
-
-    useEffect(() => {
-        // Subscribe to changes in the currentSprite state
-        const unsubscribe = useStore.subscribe(
-            (state) => state.currentSprite,
-            (currentSprite) => {
-                // Check if the currentSprite matches this component's sprite and hasn't been played yet
-                if (currentSprite.sprite === sprite && !hasBeenPlayedRef.current) {
-                    play() // Play the animation
-                    hasBeenPlayedRef.current = true; // Mark as played
-                } else if (currentSprite.sprite !== sprite) {
-                    // Reset the played flag if the current sprite changes
-                    hasBeenPlayedRef.current = false
-                }
-            }
-        )
-
-        // Cleanup: unsubscribe from the store on component unmount
-        return () => unsubscribe();
-    }, [sprite]); // Depend on the sprite prop to re-subscribe if it changes
-    
     // 'update'
     useFrame((state) => {
         if(lookAtCam) { plane.current.lookAt(state.camera.position) }
+
+        const currentState = useStore.getState();
+        const currentSprite = currentState.currentSprite;
+
+        if (currentSprite !== lastPlayedSpriteRef.current && currentSprite.sprite === sprite) {
+            play()
+            lastPlayedSpriteRef.current = currentSprite
+            console.log("useFrame play")
+        } else if (currentSprite.sprite !== sprite) {
+            lastPlayedSpriteRef.current = null
+            plane.current.visible = false
+        }
+
         updateSpriteFrame()
     })
 
