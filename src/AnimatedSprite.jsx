@@ -30,6 +30,7 @@ export default function AnimatedSpriteMesh({
     const spriteTileCoords = new THREE.Vector2()
     const lastPlayedSpriteRef = useRef(null)
 
+    let currentSprite = useStore.getState().currentSprite
     let isPlaying = playOnLoad
     let currentFrame = startFrame
     let nextFrameTime = 0
@@ -42,6 +43,7 @@ export default function AnimatedSpriteMesh({
         plane.current.visible = true
         isPlaying = true
         currentFrame = startFrame
+        lastPlayedSpriteRef.current = currentSprite
     }
 
     function playAudio() {
@@ -87,12 +89,12 @@ export default function AnimatedSpriteMesh({
         }
     }
 
-    const handleVisibilityHidden = () => {
+    const handleUserLeavesTab = () => {
         plane.current.visible = false
         isPlaying = false
     }
 
-    const handleVisibilityVisible = () => {
+    const handleUserReturnsToTab = () => {
         plane.current.visible = false
         isPlaying = false
     }
@@ -100,7 +102,7 @@ export default function AnimatedSpriteMesh({
     // HOOKS - - - - - - - - - - - - - - - - - - - - - - 
 
     // stop sprites when user leaves tab/window
-    usePageVisibility(handleVisibilityVisible, handleVisibilityHidden)
+    usePageVisibility(handleUserReturnsToTab, handleUserLeavesTab)
 
     // 'initialize'
     useEffect(() => {
@@ -112,10 +114,6 @@ export default function AnimatedSpriteMesh({
         }
         const ratioHeightToWidth = frameSize.y/frameSize.x
         const scaleMultiplier = props.scale ? props.scale : 1
-        const delayOffset = 0 // setting this offset (in milliseconds) helps with avoiding multiple sprites triggering at once 
-
-        let timeoutId
-        let delayToNextEvent = useStore.getState().nextEventTime - useStore.getState().simulatedTime.getTime() + delayOffset
 
         plane.current.scale.set(
             scaleMultiplier,
@@ -137,13 +135,10 @@ export default function AnimatedSpriteMesh({
     useFrame((state) => {
         if(lookAtCam) { plane.current.lookAt(state.camera.position) }
 
-        const currentState = useStore.getState();
-        const currentSprite = currentState.currentSprite;
+        currentSprite = useStore.getState().currentSprite
 
         if (currentSprite !== lastPlayedSpriteRef.current && currentSprite.sprite === sprite) {
             play()
-            lastPlayedSpriteRef.current = currentSprite
-            console.log("useFrame play")
         } else if (currentSprite.sprite !== sprite) {
             lastPlayedSpriteRef.current = null
             plane.current.visible = false
