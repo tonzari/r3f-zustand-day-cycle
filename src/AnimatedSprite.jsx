@@ -66,6 +66,9 @@ export default function AnimatedSpriteMesh({
 
     function handleClick(e) {
         //if(clickToPlay && allowRetrigger || clickToPlay && !isPlaying) { play() }
+        if(currentSprite.sprite === sprite && isPlaying) {
+            console.log(`You clicked ${sprite}!`)
+        }
         if(props.onClick) { props.onClick(e) }
     }
 

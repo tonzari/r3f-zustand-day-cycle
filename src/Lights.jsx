@@ -26,7 +26,7 @@ export default function Lights() {
 
     return <>
         <ambientLight 
-            intensity={.3} 
+            intensity={1} 
         />
         <directionalLight
             ref={dirLight}
