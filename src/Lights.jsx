@@ -11,26 +11,26 @@ export default function Lights() {
     console.log("Lights rerender")
 
     const dirLight = useRef()
-    const shadowCameraDimension = 1000
 
     useFrame(() => {
         if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
             dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 8, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 3, 0.2)
         } else {
             dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, -12, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 12, 0.2)
         }
     })  
 
-
     return <>
         <ambientLight 
-            intensity={1} 
+            intensity={1}
+            color={[1,0.7,0.8]}
         />
         <directionalLight
             ref={dirLight}
             castShadow
+            color={[0.8,1,1]}
             intensity={1}
             position={[4,5,3]}
             shadow-mapSize={2048}

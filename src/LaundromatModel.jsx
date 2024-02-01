@@ -8,16 +8,6 @@ export function LaundromatModel(props) {
   const { nodes, materials } = useGLTF("models/Laundromat_21_ad.glb");
   return (
     <group {...props} dispose={null}>
-      <PerspectiveCamera
-        name="Camera"
-        makeDefault={false}
-        far={1000}
-        near={0.1}
-        fov={26.3786}
-        position={[-1.7996, 2.092, 7.209]}
-        rotation={[0.0925, -0.2937, 0.0164]}
-        scale={0.502}
-      />
       <group
         name="Washing_Machines"
         position={[-2.0146, 2.4622, 0.1467]}
@@ -46,7 +36,7 @@ export function LaundromatModel(props) {
         />
       </group>
       <mesh
-        name="Gumball_Machine"
+        name="Gumball Machine"
         castShadow
         receiveShadow
         geometry={nodes.Gumball_Machine.geometry}
@@ -54,7 +44,7 @@ export function LaundromatModel(props) {
         position={[1.3325, 2.6917, -0.163]}
       />
       <mesh
-        name="Clothes_Basket"
+        name="Clothes Basket"
         castShadow
         receiveShadow
         geometry={nodes.Clothes_Basket.geometry}
@@ -74,7 +64,7 @@ export function LaundromatModel(props) {
         />
       </mesh>
       <mesh
-        name="Soap_Bottle"
+        name="Soap Bottle"
         castShadow
         receiveShadow
         geometry={nodes.Soap_Bottle.geometry}
@@ -82,7 +72,7 @@ export function LaundromatModel(props) {
         position={[0.6608, 3.2261, 0.254]}
         rotation={[0, 0.0899, -0.0041]}
       />
-      <group name="Coffee_Cup" position={[0.5486, 3.0626, 0.2736]}>
+      <group name="Coffee Cup" position={[0.5486, 3.0626, 0.2736]}>
         <mesh
           name="Cylinder"
           castShadow
