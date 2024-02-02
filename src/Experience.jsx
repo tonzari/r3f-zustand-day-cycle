@@ -3,7 +3,6 @@ import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
-import WindowScene from "./WindowScene";
 import { useStore } from "./store";
 
 import AnimatedSpriteMesh from "./AnimatedSprite";
@@ -14,7 +13,6 @@ export default function Experience() {
     console.log("experience rerender")
 
     // Zustand State
-    const startDayCycle  = useStore((state) => state.startDayCycle)
     const updateDayCycle = useStore((state) => state.updateDayCycle)
     const setNextEvent   = useStore((state) => state.setNextEvent)
     const clearDayCycle  = useStore((state) => state.clearDayCycle)
@@ -36,9 +34,8 @@ export default function Experience() {
 
         // Start your machines! Wash!
         startClock()
-        startDayCycle()
-        runEventInterval()
         updateDayCycle()
+        runEventInterval()
         
         // Cleanup recursive timeouts
         return () => {

@@ -1,6 +1,6 @@
 import { useState } from "react"
 import  {useStore}  from "./store"
-import Clock from "./Clock"
+import TimeDebugDisplay from "./TimeDebugDisplay"
 
 export default function Overlay() {
     console.log("overlay rerender")
@@ -37,6 +37,6 @@ export default function Overlay() {
             <strong>Current value: </strong>{speedMultiplier}x faster than real REAL LIFE
         </p>
 
-        <Clock />
+        <TimeDebugDisplay />
     </div>
 }

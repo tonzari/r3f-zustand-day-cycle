@@ -1,7 +1,7 @@
 import format from 'date-fns/format'
 import { useStore } from './store'
 
-function Clock() {
+function TimeDebugDisplay() {
   const { simulatedTime, nextEventTime, currentSprite} = useStore()
   const realTime = useStore((state) => state.realTime)
 
@@ -20,4 +20,4 @@ function Clock() {
   )
 }
 
-export default Clock
+export default TimeDebugDisplay

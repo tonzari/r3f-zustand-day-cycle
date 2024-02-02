@@ -37,7 +37,7 @@ export default function AnimatedSpriteMesh({
 
         currentSprite = useStore.getState().currentSprite
 
-        // This instance of AnimatedSprite should play (once). 
+        // This instance of AnimatedSprite should play the animation (once). 
         if (currentSprite.sprite === sprite) {
             // Initialize sprite
             if(!hasAlreadyPlayed() && !isPlaying) {
@@ -47,7 +47,7 @@ export default function AnimatedSpriteMesh({
                 currentFrame = startFrame
                 lastPlayedSpriteRef.current = currentSprite
             }
-            
+
             // Animate the sprite. update frames based on time, not useFrame fps  
             if(isPlaying && window.performance.now() >= nextFrameTime) {  
                 texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
@@ -64,8 +64,9 @@ export default function AnimatedSpriteMesh({
 
                 nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
             }
-        } 
-        else { // This instance of AnimatedSprite should be hidden
+        }
+        // This instance of AnimatedSprite should be hidden
+        else { 
             lastPlayedSpriteRef.current = null
             plane.current.visible = false
         }
