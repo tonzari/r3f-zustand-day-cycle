@@ -94,7 +94,7 @@ const store = (set) => ({
   setNextEvent: (milliseconds) => {
     set((state)=> {
 
-      // set next sprite at random
+      // set next sprite at random, loop to enforce no repeats
       let sprite = state.currentSprite
 
       while(sprite === state.currentSprite) {

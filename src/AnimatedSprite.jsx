@@ -12,10 +12,6 @@ export default function AnimatedSpriteMesh({
     startFrame, 
     endFrame, 
     fps, 
-    loop = false, 
-    playOnLoad = false, 
-    clickToPlay = false, 
-    allowRetrigger = false, 
     lookAtCam = false, 
     alphaTest = 0.5, 
     ...props }) {
@@ -31,19 +27,48 @@ export default function AnimatedSpriteMesh({
     const lastPlayedSpriteRef = useRef(null)
 
     let currentSprite = useStore.getState().currentSprite
-    let isPlaying = playOnLoad
+    let isPlaying = false
     let currentFrame = startFrame
     let nextFrameTime = 0
     
     // FUNCTIONS - - - - - - - - - - - - - - - - - - - - 
 
-    function play() {
-        if(!allowRetrigger && isPlaying) return
-        playAudio()
-        plane.current.visible = true
-        isPlaying = true
-        currentFrame = startFrame
-        lastPlayedSpriteRef.current = currentSprite
+    function updateSpriteFrame() {
+
+        currentSprite = useStore.getState().currentSprite
+
+        if (currentSprite.sprite === sprite) {
+            if(!hasAlreadyPlayed() && !isPlaying) {
+                playAudio()
+                plane.current.visible = true
+                isPlaying = true
+                currentFrame = startFrame
+                lastPlayedSpriteRef.current = currentSprite
+            }
+        } else {
+            lastPlayedSpriteRef.current = null
+            plane.current.visible = false
+        }
+
+        // update frames based on time, not useFrame fps  
+        
+        if(isPlaying && window.performance.now() >= nextFrameTime) {
+            texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
+
+            if (currentFrame < endFrame) {
+                currentFrame++
+            } else {
+                isPlaying = false
+                plane.current.visible = false
+                texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
+            }
+
+            nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
+        }
+    }
+
+    function hasAlreadyPlayed() {
+        return currentSprite == lastPlayedSpriteRef.current
     }
 
     function playAudio() {
@@ -70,26 +95,6 @@ export default function AnimatedSpriteMesh({
             console.log(`You clicked ${sprite}!`)
         }
         if(props.onClick) { props.onClick(e) }
-    }
-
-    function updateSpriteFrame() {
-        // update frames based on time, not useFrame fps  
-        
-        if(isPlaying && window.performance.now() >= nextFrameTime) {
-            texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
-
-            if (currentFrame < endFrame) {
-                currentFrame++
-            } else if (loop) {
-                currentFrame = startFrame
-            } else {
-                isPlaying = false
-                plane.current.visible = false
-                texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
-            }
-
-            nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
-        }
     }
 
     const handleUserLeavesTab = () => {
@@ -137,18 +142,8 @@ export default function AnimatedSpriteMesh({
     // 'update'
     useFrame((state) => {
         if(lookAtCam) { plane.current.lookAt(state.camera.position) }
-
-        currentSprite = useStore.getState().currentSprite
-
-        if (currentSprite !== lastPlayedSpriteRef.current && currentSprite.sprite === sprite) {
-            play()
-        } else if (currentSprite.sprite !== sprite) {
-            lastPlayedSpriteRef.current = null
-            plane.current.visible = false
-        }
-
         updateSpriteFrame()
-    })
+    }, [])
 
     return (
       <>
@@ -168,6 +163,7 @@ export default function AnimatedSpriteMesh({
         </mesh>
       </>
     )
+
 }
 
 
