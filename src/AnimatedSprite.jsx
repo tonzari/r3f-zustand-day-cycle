@@ -37,7 +37,9 @@ export default function AnimatedSpriteMesh({
 
         currentSprite = useStore.getState().currentSprite
 
+        // This instance of AnimatedSprite should play (once). 
         if (currentSprite.sprite === sprite) {
+            // Initialize sprite
             if(!hasAlreadyPlayed() && !isPlaying) {
                 playAudio()
                 plane.current.visible = true
@@ -45,25 +47,27 @@ export default function AnimatedSpriteMesh({
                 currentFrame = startFrame
                 lastPlayedSpriteRef.current = currentSprite
             }
-        } else {
+            
+            // Animate the sprite. update frames based on time, not useFrame fps  
+            if(isPlaying && window.performance.now() >= nextFrameTime) {  
+                texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
+                
+                // Progress Animation
+                if (currentFrame < endFrame) {
+                    currentFrame++
+                } 
+                else { // Sprite has finished
+                    isPlaying = false
+                    plane.current.visible = false
+                    texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
+                }
+
+                nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
+            }
+        } 
+        else { // This instance of AnimatedSprite should be hidden
             lastPlayedSpriteRef.current = null
             plane.current.visible = false
-        }
-
-        // update frames based on time, not useFrame fps  
-        
-        if(isPlaying && window.performance.now() >= nextFrameTime) {
-            texture.offset = getSpriteOffsetVec2(spriteTileCoords, currentFrame, rowCount, columnCount)
-
-            if (currentFrame < endFrame) {
-                currentFrame++
-            } else {
-                isPlaying = false
-                plane.current.visible = false
-                texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
-            }
-
-            nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
         }
     }
 
