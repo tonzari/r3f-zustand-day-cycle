@@ -68,7 +68,8 @@ const store = (set) => ({
         clearTimeout(state.clockTimeoutId)
         const time = new Date()
         const newTimeoutId = setTimeout(tick, 1000)
-        
+        state.updateSimulatedTime()
+
         return { 
           realTime: time,
           clockTimeoutId: newTimeoutId
@@ -92,7 +93,7 @@ const store = (set) => ({
   // Sets the next event, including a new sprite and event timestamp.
   setNextEvent: (milliseconds) => {
     set((state)=> {
-      state.updateSimulatedTime()
+
       // set next sprite at random
       let sprite = state.currentSprite
 

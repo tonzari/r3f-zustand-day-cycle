@@ -37,9 +37,9 @@ export default function Experience() {
         // Start your machines! Wash!
         startClock()
         startDayCycle()
-        updateDayCycle()
         runEventInterval()
-
+        updateDayCycle()
+        
         // Cleanup recursive timeouts
         return () => {
             clearTimeout(timeoutIdEventScheduler)
