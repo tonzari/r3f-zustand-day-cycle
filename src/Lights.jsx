@@ -11,6 +11,7 @@ export default function Lights() {
     console.log("Lights rerender")
 
     const dirLight = useRef()
+    const ambLight = useRef()
 
     useFrame(() => {
         if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
@@ -20,10 +21,17 @@ export default function Lights() {
             dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
             dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 12, 0.2)
         }
+
+        if(useStore.getState().partOfDay === "night") {
+            ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 0, 0.2)
+        } else {
+            ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 1, 0.2)
+        }
     })  
 
     return <>
         <ambientLight 
+            ref={ambLight}
             intensity={1}
             color={[1,0.7,0.8]}
         />

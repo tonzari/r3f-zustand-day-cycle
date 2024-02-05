@@ -25,7 +25,7 @@ export default function Overlay() {
                 type="range"
                 id="time-multiplier"
                 min={1}
-                max={20000}
+                max={8000}
                 value={speedMultiplier}
                 onChange={event => {
                     setSpeedMultiplier(event.target.value)

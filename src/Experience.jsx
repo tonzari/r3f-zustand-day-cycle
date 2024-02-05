@@ -12,7 +12,6 @@ export default function Experience() {
     console.log("experience rerender")
 
     // Zustand State
-    const updateDayCycle = useStore((state) => state.updateDayCycle)
     const setNextEvent   = useStore((state) => state.setNextEvent)
     const clearDayCycle  = useStore((state) => state.clearDayCycle)
     const startClock = useStore((state) => state.startClock)
@@ -30,8 +29,7 @@ export default function Experience() {
         }
 
         // Start your machines! Wash!
-        startClock()            //  ticks once a second. updates 'real time'
-        updateDayCycle()        //  updates the global state text 'morning, midday, evening, night'
+        startClock()            //  ticks once a second. updates 'real time', 'simulated time', and 'part of day'
         setTimeout(() => {
             runEventInterval()
         }, 3000);

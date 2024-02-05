@@ -32,24 +32,7 @@ const store = (set) => ({
       simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
     }
   }),
-
-  // Continuously updates the day cycle based on real-time elapsed, adjusting for speed multiplier.
-  updateDayCycle: () => {
-      const partOfDayDurationInMs = 21600000 // Full day divided to 4 parts, as milliseconds
-      const interval = () => {
-        set(state => {
-          clearTimeout(state.timeoutId)
-          const newTimeoutId = setTimeout(interval, partOfDayDurationInMs / state.speedMultiplier)
-          console.log("update day cycle", state.speedMultiplier)
-          return { 
-            partOfDay: getPartOfDay(state.simulatedTime.getHours()),
-            timeoutId: newTimeoutId
-          }
-        })
-      }
-      interval()
-  },
-
+  
   startClock: () => {
     const tick = () => {
       set(state => {
@@ -57,11 +40,11 @@ const store = (set) => ({
         const time = new Date()
         const newTimeoutId = setTimeout(tick, 1000)
         state.updateSimulatedTime()
-        state.updateDayCycle()
 
         return { 
           realTime: time,
-          clockTimeoutId: newTimeoutId
+          clockTimeoutId: newTimeoutId,
+          partOfDay: getPartOfDay(state.simulatedTime.getHours()),
         }
       })
     }
