@@ -12,20 +12,23 @@ export default function Lights() {
 
     const dirLight = useRef()
     const ambLight = useRef()
+    const pointLight = useRef()
 
     useFrame(() => {
-        if(useStore.getState().partOfDay === "night" || useStore.getState().partOfDay === "evening") {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0.5, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 3, 0.2)
-        } else {
-            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 10, 0.2)
-            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x, 12, 0.2)
+        if(useStore.getState().partOfDay === "evening") {
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 4, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x,12, 0.2)
         }
 
         if(useStore.getState().partOfDay === "night") {
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0, 0.2)
             ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 0, 0.2)
+            pointLight.current.intensity = 10
         } else {
             ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 1, 0.2)
+            dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 2, 0.2)
+            dirLight.current.position.x = THREE.MathUtils.lerp(dirLight.current.position.x,6, 0.2)
+            pointLight.current.intensity = 0
         }
     })  
 
@@ -49,6 +52,11 @@ export default function Lights() {
             shadow-camera-right={ 30 }
             shadow-camera-bottom={ -30 }
             shadow-camera-left={ -30 }
+        />
+        <pointLight
+            ref={pointLight}
+            position={[-4,3,3]}
+            intensity={1}
         />
     </>
 }
