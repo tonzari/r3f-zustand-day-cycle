@@ -34,8 +34,10 @@ export default function AnimatedSpriteMesh({
     // FUNCTIONS - - - - - - - - - - - - - - - - - - - - 
 
     function updateSpriteFrame() {
-
-        currentSprite = useStore.getState().currentSprite
+        
+        // null check. the app starts, then delays before scheduling first sprite
+        currentSprite = useStore.getState().currentSprite ?? null
+        if(!currentSprite) return
 
         // This instance of AnimatedSprite should play the animation (once). 
         if (currentSprite.sprite === sprite) {
@@ -55,14 +57,15 @@ export default function AnimatedSpriteMesh({
                 // Progress Animation
                 if (currentFrame < endFrame) {
                     currentFrame++
-                } 
-                else { // Sprite has finished
+                }
+                // Sprite has finished
+                else { 
                     isPlaying = false
                     plane.current.visible = false
                     texture.offset = getSpriteOffsetVec2(spriteTileCoords, startFrame, rowCount, columnCount)
                 }
 
-                nextFrameTime = (window.performance.now() + msPerFrame) / useStore.getState().speedMultiplier
+                nextFrameTime = window.performance.now() + msPerFrame
             }
         }
         // This instance of AnimatedSprite should be hidden
@@ -95,7 +98,6 @@ export default function AnimatedSpriteMesh({
     }
 
     function handleClick(e) {
-        //if(clickToPlay && allowRetrigger || clickToPlay && !isPlaying) { play() }
         if(currentSprite.sprite === sprite && isPlaying) {
             console.log(`You clicked ${sprite}!`)
         }

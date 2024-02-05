@@ -1,5 +1,4 @@
 import { Suspense, useEffect } from "react";
-import { OrbitControls, PerspectiveCamera } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
@@ -22,20 +21,21 @@ export default function Experience() {
         const minDelay = 4000
         const maxDelay = 6000
         let eventDelay = minDelay
-        let simulatedDelay = eventDelay / useStore.getState().speedMultiplier
         let timeoutIdEventScheduler
 
         function runEventInterval() {
             eventDelay = Math.floor(Math.random() * (maxDelay - minDelay) + minDelay)
-            simulatedDelay = eventDelay / useStore.getState().speedMultiplier
-            setNextEvent(simulatedDelay)
-            timeoutIdEventScheduler = setTimeout(runEventInterval, simulatedDelay)
+            setNextEvent(eventDelay)
+            timeoutIdEventScheduler = setTimeout(runEventInterval, eventDelay)
         }
 
         // Start your machines! Wash!
-        startClock()
-        updateDayCycle()
-        runEventInterval()
+        startClock()            //  ticks once a second. updates 'real time'
+        updateDayCycle()        //  updates the global state text 'morning, midday, evening, night'
+        setTimeout(() => {
+            runEventInterval()
+        }, 3000);
+        
         
         // Cleanup recursive timeouts
         return () => {

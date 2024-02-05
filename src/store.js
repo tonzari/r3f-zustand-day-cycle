@@ -30,7 +30,6 @@ const store = (set) => ({
     
     return { 
       simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
-      partOfDay: getPartOfDay(state.simulatedTime.getHours())
     }
   }),
 
@@ -40,12 +39,9 @@ const store = (set) => ({
       const interval = () => {
         set(state => {
           clearTimeout(state.timeoutId)
-          const currentRealTime = new Date()
-          const realTimeElapsed = currentRealTime - state.initialRealTime
-          const simulatedTimeElapsed = realTimeElapsed * state.speedMultiplier
-          const newTimeoutId = setTimeout(interval, partOfDayDurationInMs / state.speedMultiplier);
+          const newTimeoutId = setTimeout(interval, partOfDayDurationInMs / state.speedMultiplier)
+          console.log("update day cycle", state.speedMultiplier)
           return { 
-            simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
             partOfDay: getPartOfDay(state.simulatedTime.getHours()),
             timeoutId: newTimeoutId
           }
@@ -61,6 +57,7 @@ const store = (set) => ({
         const time = new Date()
         const newTimeoutId = setTimeout(tick, 1000)
         state.updateSimulatedTime()
+        state.updateDayCycle()
 
         return { 
           realTime: time,
@@ -70,17 +67,6 @@ const store = (set) => ({
     }
     tick()
   },
-
-  // Clear the recursive timeouts
-  clearDayCycle: () => set(state => {
-    clearTimeout(state.timeoutId)
-    return { dayCycleTimeoutId: null }
-  }),
-
-  clearClockCycle: () => set(state => { 
-    clearTimeout(state.clockTimeoutId)
-    return { clockTimeoutId: null}
-  }),
 
   // Sets the next event, including a new sprite and event timestamp.
   setNextEvent: (milliseconds) => {
@@ -95,7 +81,7 @@ const store = (set) => ({
       }
       
       // set next event timestamp
-      const nextTimeMs = state.simulatedTime.getTime() + milliseconds
+      const nextTimeMs = state.realTime.getTime() + milliseconds
       const nextTime = new Date(nextTimeMs)
 
       return { 
@@ -103,8 +89,20 @@ const store = (set) => ({
         currentSprite: sprite
       }
     })
-  }
-  
+  },
+
+  // CLEAR TIMEOUTS - - - - - - - 
+
+  clearDayCycle: () => set(state => {
+    clearTimeout(state.timeoutId)
+    return { dayCycleTimeoutId: null }
+  }),
+
+  clearClockCycle: () => set(state => { 
+    clearTimeout(state.clockTimeoutId)
+    return { clockTimeoutId: null}
+  }),
+
 })
 
 export const useStore = create(subscribeWithSelector(store))
