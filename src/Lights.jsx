@@ -23,7 +23,7 @@ export default function Lights() {
         if(useStore.getState().partOfDay === "night") {
             dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 0, 0.2)
             ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 0, 0.2)
-            pointLight.current.intensity = 10
+            pointLight.current.intensity = 5
         } else {
             ambLight.current.intensity = THREE.MathUtils.lerp(ambLight.current.intensity, 1, 0.2)
             dirLight.current.intensity = THREE.MathUtils.lerp(dirLight.current.intensity, 2, 0.2)
@@ -55,8 +55,11 @@ export default function Lights() {
         />
         <pointLight
             ref={pointLight}
-            position={[-4,3,3]}
+            position={[-3,4,2]}
             intensity={1}
+            castShadow
+            shadow-bias={-.1}
+            
         />
     </>
 }
