@@ -6,17 +6,13 @@ function TimeDebugDisplay() {
   const realTime = useStore((state) => state.realTime)
 
   return (
-    <p>
-      Real time: {format(realTime, 'hh:mm:ss a')}
-      <br />
-      Simulated time: {format(simulatedTime, 'hh:mm:ss a')}
-      <br />
-      Next Event: {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}
-      <br />
-      Simulated time: {format(simulatedTime, 'MMMM eeee hh:mm:ss a')}
-      <br />
-      Current: {currentSprite?.sprite}
-    </p>
+    <div className='time-debug-container'>
+      <p><span>Real time:</span> {format(realTime, 'hh:mm:ss a')}</p>
+      <p><span>Simulated time:</span> {format(simulatedTime, 'hh:mm:ss a')}</p>
+      <p><span>Next Event:</span> {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}</p>
+      <p><span>Simulated time:</span> {format(simulatedTime, 'MMMM eeee hh:mm:ss a')}</p>
+      <p><span>Current:</span> {currentSprite?.sprite}</p>
+    </div>
   )
 }
 

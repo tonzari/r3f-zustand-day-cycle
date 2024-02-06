@@ -28,13 +28,21 @@ export default function Experience() {
     const checkerPattern = useTexture('/checker.png')
 
     // LEVA controls
-    const { rotX } = useControls({rotX:0.09})
-    const { rotY } = useControls({rotY:-0.26})
-    const { rotZ } = useControls({rotZ:0.02})
-    const { posX } = useControls({posX:3.85})
-    const { posY } = useControls({posY:3.8})
-    const { posZ } = useControls({posZ:-0.2})
-    const { meshScale } = useControls({meshScale: 2.3})
+    // const { rotX } = useControls({rotX:0.09})
+    // const { rotY } = useControls({rotY:-0.26})
+    // const { rotZ } = useControls({rotZ:0.02})
+    // const { posX } = useControls({posX:3.85})
+    // const { posY } = useControls({posY:3.8})
+    // const { posZ } = useControls({posZ:-0.2})
+    // const { meshScale } = useControls({meshScale: 2.3})
+
+    const rotX = 0.09
+    const rotY = -0.2
+    const rotZ = 0.02
+    const posX = 3.85
+    const posY = 3.8
+    const posZ = -0.2
+    const meshScale = 2.3
 
     // init
     useEffect(() => {

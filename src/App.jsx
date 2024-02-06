@@ -8,7 +8,6 @@ function App() {
 
   return <>
     <Canvas
-
       shadows
       gl={{ preserveDrawingBuffer: true }}
       eventSource={document.getElementById('root')}
