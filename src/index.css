@@ -7,7 +7,6 @@ html, body, #root, #main {
   padding: 0;
   overflow: hidden;
   user-select: none;
-  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }
 
 body {
@@ -20,17 +19,4 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-}
-
-.time-debug-container {
-  background-color: rgba(130,100,100,0.5);
-  width: 400px;
-  padding: 16px;
-  font-weight: 200;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-.time-debug-container span {
-  font-weight: 600;
-  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif
 }

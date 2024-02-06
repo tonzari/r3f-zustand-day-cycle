@@ -7,11 +7,11 @@ function TimeDebugDisplay() {
 
   return (
     <div className='time-debug-container'>
-      <p><span>Real time:</span> {format(realTime, 'hh:mm:ss a')}</p>
-      <p><span>Simulated time:</span> {format(simulatedTime, 'hh:mm:ss a')}</p>
-      <p><span>Next Event:</span> {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}</p>
-      <p><span>Simulated time:</span> {format(simulatedTime, 'MMMM eeee hh:mm:ss a')}</p>
-      <p><span>Current:</span> {currentSprite?.sprite}</p>
+      <span>Real time:</span> {format(realTime, 'hh:mm:ss a')} <br />
+      <span>Simulated time:</span> {format(simulatedTime, 'hh:mm:ss a')}<br />
+      <span>Next Event:</span> {nextEventTime && format(nextEventTime, 'hh:mm:ss a')}<br />
+      <span>Simulated time:</span> {format(simulatedTime, 'MMMM eeee hh:mm:ss a')}<br />
+      <span>Current:</span> {currentSprite?.sprite}<br />
     </div>
   )
 }
