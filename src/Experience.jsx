@@ -7,10 +7,11 @@ import { useStore } from "./store";
 import AnimatedSpriteMesh from "./AnimatedSprite";
 import spriteData from './SpriteData.json'
 import { LaundromatModel } from "./LaundromatModel";
-import { useFrame } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
-import { easing } from "maath";
 import CameraWithDynamicFov from "./CameraWithDynamicFov";
+import { OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+
+import { useControls } from 'leva'
 
 export default function Experience() {
     console.log("experience rerender")
@@ -20,8 +21,20 @@ export default function Experience() {
     const clearDayCycle  = useStore((state) => state.clearDayCycle)
     const startClock = useStore((state) => state.startClock)
     const mainCam = useRef()
-    let fov = 26.3786
+    const testMesh = useRef()
+    const fov = 26.3786
+    const checkerPattern = useTexture('/checker.png')
 
+    // LEVA controls
+    const { rotX } = useControls({rotX:0.09})
+    const { rotY } = useControls({rotY:-0.26})
+    const { rotZ } = useControls({rotZ:0.02})
+    const { posX } = useControls({posX:3.85})
+    const { posY } = useControls({posY:3.8})
+    const { posZ } = useControls({posZ:-0.2})
+    const { meshScale } = useControls({meshScale: 2.3})
+
+    // init
     useEffect(() => {
         const minDelay = 4000
         const maxDelay = 6000
@@ -39,6 +52,9 @@ export default function Experience() {
         setTimeout(() => {
             runEventInterval()
         }, 3000)
+
+        //testMesh.current.lookAt(mainCam.current.position)
+        //console.log(testMesh.current.rotation.x, testMesh.current.rotation.y, testMesh.current.rotation.z)
         
         // Cleanup recursive timeouts
         return () => {
@@ -50,28 +66,55 @@ export default function Experience() {
 
     return <>
         <Perf position={'bottom-left'}/>
-        {/* <OrbitControls /> */}
 
-        {/* <PerspectiveCamera
+        <PerspectiveCamera
+            makeDefault
             ref={mainCam}
-            makeDefault // This makes it the default camera for the scene
             near={0.01}
             far={150}
             fov={fov}
             position={[-1.7996, 2.092, 7.209]}
             rotation={[0.0925, -0.2937, 0.0164]}
-      /> */}
+        />
 
-        <CameraWithDynamicFov />
-
+        {/* <OrbitControls /> */}
         <Lights />
-        {/* <WindowScene /> */}
+
+        {/* 
+        
+            Sprite Sheet Mesh
+
+            // LEVA controls - values to compensate for camera distortion
+            
+            const { rotX } = useControls({rotX:0.09})
+            const { rotY } = useControls({rotY:-0.26})
+            const { rotZ } = useControls({rotZ:0.02})
+            const { posX } = useControls({posX:3.85})
+            const { posY } = useControls({posY:3.8})
+            const { posZ } = useControls({posZ:-0.2})
+            const { meshScale } = useControls({meshScale: 2.3})
+
+        */}
+        <mesh
+            scale={meshScale}
+            position={[posX,posY,posZ]}
+            rotation={[rotX, rotY, rotZ]}
+            renderOrder={1000000}
+            ref={testMesh}
+        >
+            <planeGeometry />
+            <meshStandardMaterial 
+                // depthTest={false}
+                // depthWrite={false}
+                map={checkerPattern}
+            />
+        </mesh>
 
         <Suspense fallback={null}>
             <LaundromatModel />
         </Suspense>
 
-        <group position={[4,1,0]}>
+        {/* <group position={[4,1,0]}>
             {spriteData.map((item, index) =>
                 <Suspense key={index}>
                     <AnimatedSpriteMesh
@@ -87,6 +130,6 @@ export default function Experience() {
                     />
                 </Suspense>
             )}
-        </group>
+        </group> */}
     </>
 }
