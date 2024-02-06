@@ -1,17 +1,19 @@
 import { Suspense, useEffect, useRef } from "react";
+import { OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
 import { useStore } from "./store";
 
 import AnimatedSpriteMesh from "./AnimatedSprite";
+import CameraWithDynamicFov from "./CameraWithDynamicFov"
 import spriteData from './SpriteData.json'
 import { LaundromatModel } from "./LaundromatModel";
-import CameraWithDynamicFov from "./CameraWithDynamicFov";
-import { OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+
+
 
 import { useControls } from 'leva'
+import RotateByCursor from "./RotateByCursor";
 
 export default function Experience() {
     console.log("experience rerender")
@@ -67,7 +69,8 @@ export default function Experience() {
     return <>
         <Perf position={'bottom-left'}/>
 
-        <PerspectiveCamera
+        <CameraWithDynamicFov />
+        {/* <PerspectiveCamera
             makeDefault
             ref={mainCam}
             near={0.01}
@@ -75,61 +78,70 @@ export default function Experience() {
             fov={fov}
             position={[-1.7996, 2.092, 7.209]}
             rotation={[0.0925, -0.2937, 0.0164]}
-        />
+        /> */}
 
-        {/* <OrbitControls /> */}
-        <Lights />
 
-        {/* 
-        
-            Sprite Sheet Mesh
+        <RotateByCursor>
+         {/* <OrbitControls /> */}
+         
+         <Lights />
 
-            // LEVA controls - values to compensate for camera distortion
-            
-            const { rotX } = useControls({rotX:0.09})
-            const { rotY } = useControls({rotY:-0.26})
-            const { rotZ } = useControls({rotZ:0.02})
-            const { posX } = useControls({posX:3.85})
-            const { posY } = useControls({posY:3.8})
-            const { posZ } = useControls({posZ:-0.2})
-            const { meshScale } = useControls({meshScale: 2.3})
+            {/* 
 
-        */}
-        <mesh
-            scale={meshScale}
-            position={[posX,posY,posZ]}
-            rotation={[rotX, rotY, rotZ]}
-            renderOrder={1000000}
-            ref={testMesh}
-        >
-            <planeGeometry />
-            <meshStandardMaterial 
-                // depthTest={false}
-                // depthWrite={false}
-                map={checkerPattern}
-            />
-        </mesh>
+                Sprite Sheet Mesh
 
-        <Suspense fallback={null}>
-            <LaundromatModel />
-        </Suspense>
+                // LEVA controls - values to compensate for camera distortion
 
-        {/* <group position={[4,1,0]}>
-            {spriteData.map((item, index) =>
-                <Suspense key={index}>
-                    <AnimatedSpriteMesh
-                        sprite={item.sprite}
-                        fps={item.fps}
-                        columnCount={item.columnCount}
-                        rowCount={item.rowCount}
-                        startFrame={item.startFrame}
-                        endFrame={item.endFrame}
-                        position={item.position}
-                        scale={item.scale}
-                        rotation={[0, Math.PI/0.59, 0]}
-                    />
-                </Suspense>
-            )}
-        </group> */}
+                const { rotX } = useControls({rotX:0.09})
+                const { rotY } = useControls({rotY:-0.26})
+                const { rotZ } = useControls({rotZ:0.02})
+                const { posX } = useControls({posX:3.85})
+                const { posY } = useControls({posY:3.8})
+                const { posZ } = useControls({posZ:-0.2})
+                const { meshScale } = useControls({meshScale: 2.3})
+
+            */}
+
+
+            {/* <mesh
+                scale={meshScale}
+                position={[posX,posY,posZ]}
+                rotation={[rotX, rotY, rotZ]}
+                renderOrder={1000000}
+                ref={testMesh}
+            >
+                <planeGeometry />
+                <meshStandardMaterial 
+                    // depthTest={false}
+                    // depthWrite={false}
+                    map={checkerPattern}
+                />
+            </mesh> */}
+
+            <Suspense fallback={null}>
+                <LaundromatModel />
+            </Suspense>
+
+            <group 
+                position={[posX,posY,posZ]}
+                rotation={[rotX, rotY, rotZ]}
+                scale={meshScale}
+            >
+                {spriteData.map((item, index) =>
+                    <Suspense key={index}>
+                        <AnimatedSpriteMesh
+                            sprite={item.sprite}
+                            fps={item.fps}
+                            columnCount={item.columnCount}
+                            rowCount={item.rowCount}
+                            startFrame={item.startFrame}
+                            endFrame={item.endFrame}
+                        />
+                    </Suspense>
+                )}
+            </group>
+        </RotateByCursor>
+
+       
     </>
 }

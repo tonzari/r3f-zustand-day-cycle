@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { useFrame } from "@react-three/fiber"
 import { useEffect, useRef } from "react"
-//import {updateDayCycle} from './util'
 import { useStore } from "./store"
 
 // an example of how a light system might respond to state changes.
