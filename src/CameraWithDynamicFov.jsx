@@ -50,9 +50,12 @@ export default function CameraWithDynamicFov() {
             mainCam.current.fov = 40
             console.log(1, mainCam.current.fov)
             mainCam.current.position.set(-1.5, 2.092, 7.209)
-        } else{
+        } else if(viewport.aspect > 0.6){
             mainCam.current.fov = 45
             mainCam.current.position.set(-0.9, 2.092, 7.209)
+        } else {
+            mainCam.current.fov = 45
+            mainCam.current.position.set(-0.1, 2.092, 7.209)
         }
 
     }, [viewport])
