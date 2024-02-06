@@ -11,6 +11,8 @@ export function LaundromatModel(props) {
   const { nodes, materials } = useGLTF("models/Laundromat_24_ad.glb")
   const minuteHand = useRef()
   const hourHand = useRef()
+
+  const setFocusedObject = useStore((state)=>state.setFocusedObject)
   
   let lastMinute = null
   let lastHour = null
@@ -103,6 +105,10 @@ export function LaundromatModel(props) {
         />
       </mesh>
       <group
+        onClick={()=>{
+          console.log("clock!!!")
+          setFocusedObject('clock')
+        }}
         name="Clock"
         position={[-0.631, 3.975, -0.496]}
         rotation={[Math.PI / 2, 0, 0]}

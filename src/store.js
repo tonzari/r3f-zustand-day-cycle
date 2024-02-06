@@ -15,6 +15,7 @@ const store = (set) => ({
   currentSprite: null,
   dayCycleTimeoutId: null,
   clockTimeoutId: null,
+  focusedObject: '',
 
   // Updates the part of day based on new time.
   setPartOfDay: newTime => set({ partOfDay: newTime }),
@@ -32,7 +33,7 @@ const store = (set) => ({
       simulatedTime: new Date(state.initialRealTime.getTime() + simulatedTimeElapsed),
     }
   }),
-  
+
   startClock: () => {
     const tick = () => {
       set(state => {
@@ -72,6 +73,10 @@ const store = (set) => ({
         currentSprite: sprite
       }
     })
+  },
+
+  setFocusedObject: (objectName) => {
+    set({focusedObject: objectName })
   },
 
   // CLEAR TIMEOUTS - - - - - - - 

@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
@@ -7,6 +7,10 @@ import { useStore } from "./store";
 import AnimatedSpriteMesh from "./AnimatedSprite";
 import spriteData from './SpriteData.json'
 import { LaundromatModel } from "./LaundromatModel";
+import { useFrame } from "@react-three/fiber";
+import { PerspectiveCamera } from "@react-three/drei";
+import { easing } from "maath";
+import CameraWithDynamicFov from "./CameraWithDynamicFov";
 
 export default function Experience() {
     console.log("experience rerender")
@@ -15,6 +19,8 @@ export default function Experience() {
     const setNextEvent   = useStore((state) => state.setNextEvent)
     const clearDayCycle  = useStore((state) => state.clearDayCycle)
     const startClock = useStore((state) => state.startClock)
+    const mainCam = useRef()
+    let fov = 26.3786
 
     useEffect(() => {
         const minDelay = 4000
@@ -29,22 +35,34 @@ export default function Experience() {
         }
 
         // Start your machines! Wash!
-        startClock()            //  ticks once a second. updates 'real time', 'simulated time', and 'part of day'
+        startClock() //  ticks once a second. updates 'real time', 'simulated time', and 'part of day'
         setTimeout(() => {
             runEventInterval()
-        }, 3000);
-        
+        }, 3000)
         
         // Cleanup recursive timeouts
         return () => {
             clearTimeout(timeoutIdEventScheduler)
             clearDayCycle()
+            removeEventListener('resize')
         } 
       }, [])
 
     return <>
         <Perf position={'bottom-left'}/>
         {/* <OrbitControls /> */}
+
+        {/* <PerspectiveCamera
+            ref={mainCam}
+            makeDefault // This makes it the default camera for the scene
+            near={0.01}
+            far={150}
+            fov={fov}
+            position={[-1.7996, 2.092, 7.209]}
+            rotation={[0.0925, -0.2937, 0.0164]}
+      /> */}
+
+        <CameraWithDynamicFov />
 
         <Lights />
         {/* <WindowScene /> */}
