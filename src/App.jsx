@@ -1,5 +1,6 @@
 import { Canvas, useFrame } from "@react-three/fiber"
 import Experience from "./Experience"
+import Effects from "./Effects"
 // fov: 26.3786
 
 
@@ -15,6 +16,9 @@ function App() {
     >
       <color attach="background" args={['black']} />
       <Experience />
+
+      <Effects />
+
     </Canvas>
   </>
 }

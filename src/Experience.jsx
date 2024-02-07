@@ -1,14 +1,14 @@
 import { Suspense, useEffect, useRef } from "react";
-import { OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei";
+import { Billboard, MeshReflectorMaterial, OrbitControls, PerspectiveCamera, useTexture } from "@react-three/drei";
 import { Perf } from "r3f-perf";
 
 import Lights from "./Lights";
 import { useStore } from "./store";
 
-import AnimatedSpriteMesh from "./AnimatedSprite";
+import AnimatedSpriteMesh from "./AnimatedSprite"
 import CameraWithDynamicFov from "./CameraWithDynamicFov"
 import spriteData from './SpriteData.json'
-import { LaundromatModel } from "./LaundromatModel";
+import { LaundromatModel } from "./LaundromatModel"
 
 
 
@@ -63,9 +63,6 @@ export default function Experience() {
             runEventInterval()
         }, 3000)
 
-        //testMesh.current.lookAt(mainCam.current.position)
-        //console.log(testMesh.current.rotation.x, testMesh.current.rotation.y, testMesh.current.rotation.z)
-        
         // Cleanup recursive timeouts
         return () => {
             clearTimeout(timeoutIdEventScheduler)
@@ -78,6 +75,7 @@ export default function Experience() {
         <Perf position={'bottom-left'}/>
 
         <CameraWithDynamicFov />
+
         {/* <PerspectiveCamera
             makeDefault
             ref={mainCam}
@@ -88,10 +86,9 @@ export default function Experience() {
             rotation={[0.0925, -0.2937, 0.0164]}
         /> */}
 
+         {/* <OrbitControls /> */}
 
         <RotateByCursor>
-         {/* <OrbitControls /> */}
-         
          <Lights />
 
             {/* 
@@ -130,13 +127,26 @@ export default function Experience() {
                 <LaundromatModel />
             </Suspense>
 
-            <group 
-                position={[posX,posY,posZ]}
-                rotation={[rotX, rotY, rotZ]}
-                scale={meshScale}
-            >
+            {/* <mesh position={[0, 1.96, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={100}>
+                <planeGeometry />
+                <MeshReflectorMaterial
+                    blur={[400, 100]}
+                    resolution={1024}
+                    mixBlur={1}
+                    mixStrength={15}
+                    depthScale={1}
+                    minDepthThreshold={0.85}
+                    color="#DDD"
+                    metalness={0.6}
+                    roughness={1}
+                />
+            </mesh> */}
+
+            <group position={[posX,posY,posZ]}>
                 {spriteData.map((item, index) =>
+               
                     <Suspense key={index}>
+                         <Billboard>
                         <AnimatedSpriteMesh
                             sprite={item.sprite}
                             fps={item.fps}
@@ -144,8 +154,11 @@ export default function Experience() {
                             rowCount={item.rowCount}
                             startFrame={item.startFrame}
                             endFrame={item.endFrame}
+                            scale={item.scale}
                         />
+                        </Billboard>
                     </Suspense>
+                
                 )}
             </group>
         </RotateByCursor>
